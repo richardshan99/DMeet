@@ -6,8 +6,7 @@ namespace app\common\library;
 
 class Tencloud
 {
-    //TENCENTCLOUD_SECRET_ID
-    const SECRET_ID = "AKIDKZbSAkuyu9HII5nLfr8IJ72pRAf2C8sP";
+
     //TENCENTCLOUD_SECRET_KEY
     const SECRET_KEY = "S5UgiZBdu3D8pMhrq0InAKH1pW6Vijps";
     //人脸核验
