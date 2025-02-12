@@ -1,0 +1,85 @@
+<form id="add-form" class="form-horizontal form-ajax" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+
+    <div class="form-group">
+        <label for="" class="control-label col-xs-12 col-sm-2">{:__('类型')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[type]', $typeList, null, ['class'=>'form-control selectpicker', 'data-rule'=>'required', 'title'=>'请选择类型'])}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="key" class="control-label col-xs-12 col-sm-2">{:__('字段名')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="key" name="row[key]" value="" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="name" class="control-label col-xs-12 col-sm-2">{:__('字段标题')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[name]" value="" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=9||type=10">
+        <label for="content" class="control-label col-xs-12 col-sm-2">{:__('Content')}:</label>
+        <div class="col-xs-12 col-sm-8">
+                <textarea name="row[content]" id="content" cols="30" rows="5" class="form-control" data-rule="required(content)">value1|title1
+value2|title2</textarea>
+        </div>
+    </div>
+<!--    <div class="form-group" data-favisible="type=8">-->
+<!--        <label for="value" class="control-label col-xs-12 col-sm-2">{:__('选择级数')}:</label>-->
+<!--        <div class="col-xs-12 col-sm-8">-->
+<!--            <select class="form-control selectpicker" title="请选择级数" name="row[area_level]">-->
+<!--                <option value="1">国家</option>-->
+<!--                <option value="2">国家-省</option>-->
+<!--                <option value="3" selected>国家-省-市</option>-->
+<!--                <option value="4">国家-省-市-区</option>-->
+<!--            </select>-->
+<!--        </div>-->
+<!--    </div>-->
+    <div class="form-group" data-favisible="type=2||type=3||type=9||type=10">
+        <label for="value1" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="value1" name="row[value1]" value="" data-rule="" />
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=7">
+        <label for="value2" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="value2" name="row[value2]" value="" data-rule="integer(+0)" />
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=8">
+        <label for="value3" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="form-inline" data-toggle="cxselect" data-selects="country,province,city" data-empty-style="none">
+                <select class="country form-control" name="row[country]" data-url="ajax/getAreaList" >
+                </select>
+                <select class="province form-control" name="row[province]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required">
+                </select>
+                <select class="city form-control" name="row[city]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=5">
+        <label for="value4" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control datetimepicker" data-date-format=" YYYY-MM-DD" id="value4" name="row[value3]" value="" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="" class="control-label col-xs-12 col-sm-2">{:__('是否必填')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[is_require]', ["1"=>"是", "-1"=>"否"], -1)}
+        </div>
+    </div>
+
+    <div class="form-group hidden layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

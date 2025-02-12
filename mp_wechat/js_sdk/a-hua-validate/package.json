@@ -1,0 +1,20 @@
+{
+    "id": "a-hua-validate",
+    "name": "validate",
+    "displayName": "validate",
+    "version": "1.0.0",
+    "description": "验证",
+    "keywords": [
+        "formData验证",
+        "表单验证",
+        "数据验证",
+        "自定义验证",
+        "验证"
+    ],
+    "dcloudext": {
+        "category": [
+            "JS SDK",
+            "通用 SDK"
+        ]
+    }
+}

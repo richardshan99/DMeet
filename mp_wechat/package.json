@@ -1,0 +1,21 @@
+{
+    "id": "mosowe-invented-list",
+    "name": "虚拟滚动，虚拟列表组件",
+    "displayName": "虚拟滚动，虚拟列表组件",
+    "version": "1.0.1",
+    "description": "虚拟滚动组件，虚拟列表",
+    "keywords": [
+        "虚拟滚动组件",
+        "虚拟列表"
+    ],
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    },
+    "dependencies": {
+        "jweixin-module": "^1.6.0",
+        "lwu-request": "^1.8.3"
+    }
+}

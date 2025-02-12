@@ -1,0 +1,14 @@
+<view class="tab-bar" wx:if="{{showTabbar}}">
+  <view class="bar_back">
+	  <image src="/static/bottom_bar.png"></image>
+  </view>
+  <view class="tab-bar-top">
+	  <view wx:for="{{list}}" wx:key="index" class="tab-bar-item" data-path="{{item.pagePath}}" data-index="{{index}}" bindtap="switchTab">
+	    <image class="midbutton" wx:if="{{index == 2}}" src="{{item.iconPath}}"></image>
+		<image wx:else src="{{selected === index ? item.selectedIconPath : item.iconPath}}"></image>
+	    <text class="{{selected === index?'active':'common'}}">{{item.text}}</text>
+		<text class="badge_num" wx:if="{{item.count != null && item.count > 0}}">{{item.count}}</text>
+		<text class="badge_num" wx:if="{{item.invationCount != null && item.invationCount > 0}}">{{item.invationCount}}</text>
+	  </view>
+  </view>
+</view>

@@ -1,0 +1,126 @@
+<form id="add-form" class="form-horizontal form-ajax" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+    <div class="form-group">
+        <label for="c-thumb" class="control-label col-xs-12 col-sm-2">{:__('活动缩略图<br>(尺寸：288*192px)')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-thumb" data-rule="required" class="form-control" name="row[thumb]" type="text" value="">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-thumb" class="btn btn-danger faupload" data-input-id="c-thumb" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="false" data-preview-id="p-thumb"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-thumb"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-thumb"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-images" class="control-label col-xs-12 col-sm-2">{:__('活动轮播图<br>(尺寸：750*500px)')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-images" data-rule="required" class="form-control" name="row[images]" type="text" value="">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-images" class="btn btn-danger faupload" data-input-id="c-images" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="true" data-preview-id="p-images"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-images"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-images"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="name" class="control-label col-xs-12 col-sm-2">{:__('活动名称')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[name]" value="" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="area_id" class="control-label col-xs-12 col-sm-2">{:__('活动地区')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="form-inline" data-toggle="cxselect" data-selects="country,province,city" data-empty-style="none">
+                <select class="country form-control" name="row[country]" data-url="ajax/getAreaList" data-rule="required">
+                </select>
+                <select class="province form-control" name="row[province]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required">
+                </select>
+                <select class="city form-control" name="row[city]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="area" class="control-label col-xs-12 col-sm-2">{:__('活动类型')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[activity_type_id]', $activityTypeList, null, ['class'=>'form-control selectpicker', 'data-rule'=>'required', 'title'=>'请选择活动类型'])}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="content" class="control-label col-xs-12 col-sm-2">{:__('图文编辑')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <textarea class="form-control editor" id="content" name="row[content][content]" data-rule="required" ></textarea></div>
+    </div>
+    <div class="form-group">
+        <label for="min_num" class="control-label col-xs-12 col-sm-2">{:__('活动总人数')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <span class="input-group-text">最少人数</span>
+                </div>
+                <input type="text" class="form-control" id="min_num" name="row[min_num]" value="" data-rule="required;integer(+)" data-msg-required="请填写活动最少人数" />
+                <div class="input-group-addon" style="border-left:none;">
+                    <span class="input-group-text">人</span>
+                </div>
+                <span class="msg-box n-right" for="min_num"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="max_num" class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <span class="input-group-text">最多人数</span>
+                </div>
+                <input type="text" class="form-control" id="max_num" name="row[max_num]" value="" data-rule="required;integer(+);match(gte, row[min_num])" data-msg-required="请填写活动最多人数" data-msg-match="不能小于最少人数" />
+                <div class="input-group-addon" style="border-left:none;">
+                    <span class="input-group-text">人</span>
+                </div>
+                <span class="msg-box n-right" for="max_num"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="begin_time" class="control-label col-xs-12 col-sm-2">{:__('活动日期')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <span class="input-group-text">开始时间</span>
+                </div>
+                <input type="text" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm" id="begin_time" name="row[begin_time]" value="" data-rule="required" />
+                <span class="msg-box n-right" for="begin_time"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="end_time" class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <div class="input-group-addon">
+                    <span class="input-group-text">结束时间</span>
+                </div>
+                <input type="text" class="form-control datetimepicker" data-date-format="YYYY-MM-DD HH:mm" id="end_time" name="row[end_time]" value="" data-rule="required;match(gt, row[begin_time], datetime)" data-msg-match="结束时间不能早于开始时间" />
+                <span class="msg-box n-right" for="end_time"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="price" class="control-label col-xs-12 col-sm-2">{:__('价格')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="number" class="form-control" id="price" name="row[price]" value="" data-rule="required;range(0~, false)" />
+        </div>
+    </div>
+    <div class="form-group hidden layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

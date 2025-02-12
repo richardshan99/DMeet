@@ -1,0 +1,151 @@
+<form id="edit-form" class="form-horizontal" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+    {php}
+    if($row['is_regular'] == 1){ //固定项
+    {/php}
+    <div class="form-group">
+        <label for="c-{$row.key}" class="control-label col-xs-12 col-sm-2">{$row.name}默认值:</label>
+        <div class="col-xs-12 col-sm-8">
+            {php}
+                if($row['type'] == \app\common\library\Dict::USER_FORM_TYPE_FILE){ //文件上传
+            {/php}
+                    <div class="input-group">
+                        <input id="c-{$row.key}" data-rule="" class="form-control" size="50" name="row[value]" type="text" value="{$row.value}">
+                        <div class="input-group-addon no-border no-padding">
+                            <span><button type="button" id="faupload-avatar" class="btn btn-danger faupload" data-input-id="c-avatar" data-mimetype="image/*" data-multiple="false" data-preview-id="p-{$row.key}"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                        </div>
+                        <span class="msg-box n-right" for="c-{$row.key}"></span>
+                    </div>
+                <ul class="row list-inline faupload-preview" id="p-avatar"></ul>
+            {php}
+                } elseif ($row['type'] == \app\common\library\Dict::USER_FORM_TYPE_DATE){//日期选择
+            {/php}
+                    <input id="c-{$row.key}" data-rule="" class="form-control datetimepicker" data-date-format="YYYY-MM-DD" name="row[value]" type="text" value="{$row.value|htmlentities}">
+            {php}
+                } elseif (in_array($row['type'], [\app\common\library\Dict::USER_FORM_TYPE_NUMBER,\app\common\library\Dict::USER_FORM_TYPE_NUMBER_PICKER])){ //数字文本/数字选择器
+            {/php}
+                    <input id="c-{$row.key}" data-rule="integer(+)" class="form-control" name="row[value]" type="number" value="{$row.value|htmlentities}">
+            {php}
+                } elseif ($row['type'] == \app\common\library\Dict::USER_FORM_TYPE_RADIO){
+            {/php}
+                    {:build_radios('row[value]', $row['content'], $row['value']?:0)}
+            {php}
+                } elseif ($row['key'] == 'work_type') { //工作类型
+                    $workTypeList = \app\common\library\Dict::getWorkTypeList();
+            {/php}
+                    {:build_select('row[value]', $workTypeList, $row['value']?:0, ['class'=>'form-control selectpicker', 'title'=>'请选择默认工作类型'])}
+            {php}
+                } elseif ($row['key'] == 'constellation') { //星座
+                    $constellationTypeList = \app\common\library\Dict::getConstellationTypeList();
+            {/php}
+                    {:build_select('row[value]', $constellationTypeList, $row['value']?:0, ['class'=>'form-control selectpicker', 'title'=>'请选择默认星座'])}
+            {php}
+                } elseif ($row['key'] == 'education_type') { //学历
+                    $educationTypeList = \app\common\library\Dict::getEducationTypeList();
+            {/php}
+                    {:build_select('row[value]', $educationTypeList, $row['value']?:0, ['class'=>'form-control selectpicker', 'title'=>'请选择默认学历'])}
+            {php}
+                } elseif ($row['key'] == 'salary') { //年收入
+                    $salaryList = ['10-20万' => '10-20万', '20-30万' => '20-30万'];
+            {/php}
+                {:build_select('row[value]', $salaryList, $row['value']?:0, ['class'=>'form-control selectpicker', 'title'=>'请选择默认年收入'])}
+            {php}
+                }else {
+            {/php}
+                    <input id="c-{$row.key}" data-rule="" class="form-control" name="row[value]" type="text" value="{$row.value|htmlentities}">
+            {php}
+                }
+            {/php}
+        </div>
+    </div>
+    {php}
+    } else {
+    {/php}
+    <div class="form-group">
+        <label for="" class="control-label col-xs-12 col-sm-2">{:__('类型')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[type]', $typeList, $row['type'], ['class'=>'form-control selectpicker', 'data-rule'=>'required', 'title'=>'请选择类型'])}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="key" class="control-label col-xs-12 col-sm-2">{:__('字段名')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="key" name="row[key]" value="{$row.key|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="name" class="control-label col-xs-12 col-sm-2">{:__('字段标题')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[name]" value="{$row.name|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=9||type=10">
+        <label for="content" class="control-label col-xs-12 col-sm-2">{:__('Content')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {php}
+                $_content = \app\common\model\Config::encode($row['content'])
+            {/php}
+                <textarea name="row[content]" id="content" cols="30" rows="5" class="form-control" data-rule="required(content)">{if condition='$row.content'}{$_content}{else}value1|title1
+value2|title2{/if}</textarea>
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=2||type=3||type=9||type=10">
+        <label for="value1" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="value1" name="row[value1]" value="{$row.value}" />
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=7">
+        <label for="value2" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="value2" name="row[value2]" value="{$row.value}" data-rule="integer(+0)" />
+        </div>
+    </div>
+    {php}
+    $type = $row['type'];
+    if($type == 8) {
+        $content = $row['content'];
+        $areaPath = explode(',', trim($content['area_path'],','));
+
+        $country = $areaPath[1] ?? 0;
+        $province = $areaPath[2] ?? 0;
+        $city = $areaPath[3] ?? 0;
+    }
+    {/php}
+    <div class="form-group" data-favisible="type=8">
+        <label for="value3" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="form-inline" data-toggle="cxselect" data-selects="country,province,city" data-empty-style="none">
+                <select class="country form-control" name="row[country]" data-url="ajax/getAreaList" data-value="{$country ?? 0}">
+                </select>
+                <select class="province form-control" name="row[province]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required"  data-value="{$province ?? 0}">
+                </select>
+                <select class="city form-control" name="row[city]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required"  data-value="{$city ?? 0}">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group" data-favisible="type=5">
+        <label for="value4" class="control-label col-xs-12 col-sm-2">{:__('默认填充')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control datetimepicker" data-date-format=" YYYY-MM-DD" id="value4" name="row[value3]" value="{$row.value}" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="" class="control-label col-xs-12 col-sm-2">{:__('是否必填')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[is_require]', ["1"=>"是", "-1"=>"否"], $row.is_require)}
+        </div>
+    </div>
+    {php}
+    }
+    {/php}
+
+    <div class="form-group layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

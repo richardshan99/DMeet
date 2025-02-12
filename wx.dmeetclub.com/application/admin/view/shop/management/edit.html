@@ -1,0 +1,244 @@
+<form id="edit-form" class="form-horizontal form-ajax" role="form" data-toggle="validator" method="POST" action="">
+    {:token()}
+    <div class="form-group">
+        <label for="name" class="control-label col-xs-12 col-sm-2">{:__('门店名称')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="name" name="row[name]" value="{$row.name|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-thumb" class="control-label col-xs-12 col-sm-2">{:__('门店缩略图(尺寸：160*160px)')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-thumb" data-rule="required" class="form-control" name="row[thumb]" type="text" value="{$row.thumb}">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-thumb" class="btn btn-danger faupload" data-input-id="c-thumb" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="false" data-preview-id="p-thumb"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-thumb"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-thumb"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="intro" class="control-label col-xs-12 col-sm-2">{:__('类别')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_select('row[shop_category_id]', $shopCategoryList, $row.shop_category_id, ['class'=>'form-control selectpicker', 'data-rule'=>'required'])}
+        </div>
+    </div>
+    {php}
+    $area = trim($row['area_path'], ',');
+    $area = explode(',', $area);
+    $areaCountry = $area[1] ?? 0;
+    $areaProvince = $area[2] ?? 0;
+    $areaCity = $area[3] ?? 0;
+
+    {/php}
+    <div class="form-group">
+        <label for="area_id" class="control-label col-xs-12 col-sm-2">{:__('地区')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="form-inline" data-toggle="cxselect" data-selects="country,province,city" data-empty-style="none">
+                <select class="country form-control" name="row[country]" data-url="ajax/getAreaList" data-rule="required" data-value="{$areaCountry}">
+                </select>
+                <select class="province form-control" name="row[province]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required" data-value="{$areaProvince}">
+                </select>
+                <select class="city form-control" name="row[city]" data-url="ajax/getAreaList" data-query-name="pid" data-rule="required" data-value="{$areaCity}">
+                </select>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-point" class="control-label col-xs-12 col-sm-2">{:__('地址')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                {php}
+                $_address = explode(',', $row['point']);
+                $lat = $_address[1] ?? 31.82057;
+                $lng = $_address[0] ?? 117.22731;
+                {/php}
+                <input type="hidden" id="lat-id" value="{$lat}">
+                <input type="hidden" id="lng-id" value="{$lng}">
+                <input id="c-point" data-rule="required" class="form-control" readonly name="row[point]" type="text" value="{$row.point}">
+                <span class="input-group-btn"><a href="javascript:;" class="btn btn-success" data-lat-id="lat-id" data-lng-id="lng-id" data-toggle="addresspicker">打开地图</a></span>
+                <span class="msg-box n-right"></span>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-address" class="control-label col-xs-12 col-sm-2">{:__('详细地址')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="c-address" name="row[address]" value="{$row.address|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="business_time" class="control-label col-xs-12 col-sm-2">{:__('营业时间段')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control timeclicknew" id="business_time" name="row[business_time]" value="{$row.business_time|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    <span>套餐1</span>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="c-package1_name" class="control-label col-xs-12 col-sm-2">{:__('套餐名称')}:</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <input type="text" class="form-control" id="c-package1_name" name="row[package1][name]" value="{$row.package1.name}" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c-package1_name" class="control-label col-xs-12 col-sm-2">{:__('套餐价格')}:</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <input type="text" class="form-control" id="c-package1_price" name="row[package1][price]" value="{$row.package1.price?:''}" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c-package1_intro" class="control-label col-xs-12 col-sm-2">{:__('套餐简介')}:</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <input type="text" class="form-control" id="c-package1_intro" name="row[package1][intro]" value="{$row.package1.intro}" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">{:__('服务列表')}:</label>
+                        <div class="col-xs-8">
+                            <table class="table fieldlist" data-template="packagetpl1" data-name="row[package1][service]" id="first-table">
+                                <tr>
+                                    <td>{:__('名称')}</td>
+                                    <td>{:__('价格')}</td>
+                                    <td width="100"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5"><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></td>
+                                </tr>
+                            </table>
+
+                            <!--请注意实际开发中textarea应该添加个hidden进行隐藏-->
+                            <textarea name="row[package1][service]" class="form-control hidden" cols="30" rows="5">{if condition="$row.package1.service"}{:json_encode($row.package1.service)}{/if}</textarea>
+                            <script id="packagetpl1" type="text/html">
+                                <tr class="form-inline">
+                                    <td><input type="text" name="<%=name%>[<%=index%>][name]" class="form-control" size="15" value="<%=row.name%>" placeholder="服务名称"/></td>
+                                    <td><input type="text" name="<%=name%>[<%=index%>][price]" class="form-control" size="15" value="<%=row.price%>" placeholder="服务价格"/></td>
+                                    <td>
+                                        <!--下面的两个按钮务必保留-->
+                                        <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                                        <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                                    </td>
+                                </tr>
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="col-xs-12 col-sm-12">
+            <div class="panel panel-default">
+                <div class="panel-heading text-center">
+                    <span>套餐2</span>
+                </div>
+                <div class="panel-body">
+                    <div class="form-group">
+                        <label for="c-package2_name" class="control-label col-xs-12 col-sm-2">{:__('套餐名称')}:</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <input type="text" class="form-control" id="c-package2_name" name="row[package2][name]" value="{$row.package2.name}" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c-package2_name" class="control-label col-xs-12 col-sm-2">{:__('套餐价格')}:</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <input type="text" class="form-control" id="c-package2_price" name="row[package2][price]" value="{$row.package2.price?:''}" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="c-package2_intro" class="control-label col-xs-12 col-sm-2">{:__('套餐简介')}:</label>
+                        <div class="col-xs-12 col-sm-8">
+                            <input type="text" class="form-control" id="c-package2_intro" name="row[package2][intro]" value="{$row.package2.intro}" data-rule="required" />
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="control-label col-xs-2">{:__('服务列表')}:</label>
+                        <div class="col-xs-8">
+                            <table class="table fieldlist" data-template="packagetpl2" data-name="row[package2][service]" id="second-table">
+                                <tr>
+                                    <td>{:__('名称')}</td>
+                                    <td>{:__('价格')}</td>
+                                    <td width="100"></td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5"><a href="javascript:;" class="btn btn-sm btn-success btn-append"><i class="fa fa-plus"></i> {:__('Append')}</a></td>
+                                </tr>
+                            </table>
+
+                            <!--请注意实际开发中textarea应该添加个hidden进行隐藏-->
+                            <textarea name="row[package2][service]" class="form-control hidden" cols="30" rows="5">{if condition="$row.package2.service"}{:json_encode($row.package2.service)}{/if}</textarea>
+                            <script id="packagetpl2" type="text/html">
+                                <tr class="form-inline">
+                                    <td><input type="text" name="<%=name%>[<%=index%>][name]" class="form-control" size="15" value="<%=row.name%>" placeholder="服务名称"/></td>
+                                    <td><input type="text" name="<%=name%>[<%=index%>][price]" class="form-control" size="15" value="<%=row.price%>" placeholder="服务价格"/></td>
+                                    <td>
+                                        <!--下面的两个按钮务必保留-->
+                                        <span class="btn btn-sm btn-danger btn-remove"><i class="fa fa-times"></i></span>
+                                        <span class="btn btn-sm btn-primary btn-dragsort"><i class="fa fa-arrows"></i></span>
+                                    </td>
+                                </tr>
+                            </script>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="content" class="control-label col-xs-12 col-sm-2">{:__('门店文本')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="content" name="row[content][content]" value="{$row.content|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-content-images" class="control-label col-xs-12 col-sm-2">{:__('门店图片<br>(尺寸：750*500px)')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <div class="input-group">
+                <input id="c-content-images" data-rule="required" class="form-control" name="row[content][content_images]" type="text" value="{if condition='$row.content_images'}{:implode(',', $row.content_images)}{/if}">
+                <div class="input-group-addon no-border no-padding">
+                    <span><button type="button" id="faupload-content-images" class="btn btn-danger faupload" data-input-id="c-content-images" data-mimetype="image/gif,image/jpeg,image/png,image/jpg,image/bmp" data-multiple="true" data-preview-id="p-content-images"><i class="fa fa-upload"></i> {:__('Upload')}</button></span>
+                </div>
+                <span class="msg-box n-right" for="c-content-images"></span>
+            </div>
+            <ul class="row list-inline faupload-preview" id="p-content-images"></ul>
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-content" class="control-label col-xs-12 col-sm-2">{:__('提现账号类型')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            {:build_radios('row[cash_type]', $cashAccountList, $row.cash_type)}
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-account_name" class="control-label col-xs-12 col-sm-2">{:__('姓名')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="c-account_name" name="row[cash_account][name]" value="{$row.cash_account.name|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group">
+        <label for="c-account_account" class="control-label col-xs-12 col-sm-2">{:__('账号')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="c-account_account" name="row[cash_account][account]" value="{$row.cash_account.account|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group" data-favisible="cash_type=3">
+        <label for="c-account_deposit" class="control-label col-xs-12 col-sm-2">{:__('开户行')}:</label>
+        <div class="col-xs-12 col-sm-8">
+            <input type="text" class="form-control" id="c-account_deposit" name="row[cash_account][deposit]" value="{$row.cash_account.deposit|htmlentities}" data-rule="required" />
+        </div>
+    </div>
+    <div class="form-group hidden layer-footer">
+        <label class="control-label col-xs-12 col-sm-2"></label>
+        <div class="col-xs-12 col-sm-8">
+            <button type="submit" class="btn btn-primary btn-embossed disabled">{:__('OK')}</button>
+            <button type="reset" class="btn btn-default btn-embossed">{:__('Reset')}</button>
+        </div>
+    </div>
+</form>

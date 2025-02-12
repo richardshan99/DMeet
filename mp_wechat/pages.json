@@ -1,0 +1,405 @@
+{
+	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+		{
+			"path": "pages/index/index",
+			"style": {
+			  "navigationBarTitleText": "首页"
+			}			
+		},{
+			"path": "pages/activity/activity",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		},{
+			"path": "pages/invitation/invitation",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		},{
+			"path": "pages/mine/mine",
+			"style": {
+				"navigationBarTitleText": "uni-app"
+			}
+		},{
+			"path": "pages/announcement_list/announcement_list",
+			"style": {
+				"navigationStyle": "custom",
+				"backgroundColor": "#f7f8fa"
+			}
+		},
+		{
+			"path" : "pages/my_following/my_following",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/follow_me/follow_me",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/news/news",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/my_balance/my_balance",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/red_packet/red_packet",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/red_packet_withdraw/red_packet_withdraw",
+			"style" : 
+			{
+				"navigationBarTitleText" : ""
+			}
+		},
+		{
+			"path" : "pages/complete_infomation/complete_infomation",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/search/search",
+			"style" : 
+			{
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/publish_trends/publish_trends",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/about/about",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/filter/filter",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/personal_details/personal_details",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/give_invitation/give_invitation",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/give_invitation_updata/give_invitation_updata",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/authentication/authentication",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/member_purchase/member_purchase",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/my_dynamic/my_dynamic",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/report/report",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/protocol/protocol",
+			"style" : 
+			{
+				"navigationBarTitleText" : "",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationStyle": "default"
+			}
+		},
+		{
+			"path" : "pages/data_editing/data_editing",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/activity_detail/activity_detail",
+			"style" : 
+			{
+				"navigationStyle" : "default",
+				"navigationBarTitleText": "活动详情",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/my_activity/my_activity",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/attestation/attestation",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/edit_area/edit_area",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/settleds_apply/settleds_apply",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/basic_data/basic_data",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/store_information/store_information",
+			"style" : 
+			{
+				"navigationStyle" : "default",
+				"navigationBarTitleText" : "门店信息维护",
+				"navigationBarBackgroundColor": "#fff",
+				"navigationBarTextStyle": "black"
+			}
+		},
+		{
+			"path" : "pages/store_revenue/store_revenue",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/amount_details/amount_details",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/withdrawal_records/withdrawal_records",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/employee_management/employee_management",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/add_employee/add_employee",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/dynamic_detail/dynamic_detail",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/likers/likers",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/system_news/system_news",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/likes_notice/likes_notice",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/leave_message/leave_message",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/meet_shops/meet_shops",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/shop_detail/shop_detail",
+			"style" : {
+				"navigationStyle": "custom"
+			}
+		},
+		{
+			"path" : "pages/give_success/give_success",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/order_manage/order_manage",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/history_records/history_records",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/say_hello/say_hello",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/invitation_notice/invitation_notice",
+			"style" : 	{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/meeting/meeting",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/meeting_share/meeting_share",
+			"style" : {
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/interested_users/interested_users",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/announcement_detail/announcement_detail",
+			"style" : 
+			{
+				"navigationStyle" : "custom"
+			}
+		},
+		{
+			"path" : "pages/store_introduction/store_introduction",
+			"style" : 
+			{
+				"navigationBarTitleText" : "门店简介",
+				"navigationStyle": "default"
+			}
+		},
+		{
+			"path": "pages/webviewPage/webviewPage",
+			"style": {
+			  "navigationBarTitleText": "DMeet直面小程序介绍"
+			}
+		}
+	],
+	"globalStyle": {
+		"navigationBarTextStyle": "black",
+		"navigationBarTitleText": "uni-app",
+		"navigationStyle": "custom",
+		"navigationBarBackgroundColor": "#F8F8F8",
+		"backgroundColor": "#fff",
+		"usingComponents": {
+			
+		}
+	},
+	"tabBar": {
+		"custom": true,
+		"color": "#000000",
+		"selectedColor": "#000000",
+		"backgroundColor": "#000000",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": "首页"
+			},{
+				"pagePath": "pages/invitation/invitation",
+				"text": "邀约"
+			},{
+				"pagePath": "pages/activity/activity",
+				"text": "活动"
+			},{
+				"pagePath": "pages/mine/mine",
+				"text": "我的"
+			}
+		]
+	},
+	"uniIdRouter": {}
+}

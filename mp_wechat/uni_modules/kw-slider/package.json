@@ -1,0 +1,74 @@
+{
+    "id": "kw-slider",
+    "displayName": "kw-slider区间滑块range范围滑动选择组件vue3版本",
+    "version": "1.0.0",
+    "description": "vue3 双向区间滑块，自由配置，众享丝滑，兼容H5，小程序，app",
+    "keywords": [
+        "区间",
+        "滑块",
+        "range",
+        "范围",
+        "slider"
+    ],
+    "repository": "",
+    "engines": {
+        "HBuilderX": "^3.1.0"
+    },
+    "dcloudext": {
+        "category": [
+            "前端组件",
+            "通用组件"
+        ]
+    },
+    "uni_modules": {
+        "dependencies": [],
+        "encrypt": [],
+        "platforms": {
+            "cloud": {
+                "tcb": "u",
+                "aliyun": "u",
+                "alipay": "u"
+            },
+            "client": {
+                "Vue": {
+                    "vue2": "u",
+                    "vue3": "u"
+                },
+                "App": {
+                    "app-vue": "u",
+                    "app-nvue": "u",
+                    "app-uvue": "u"
+                },
+                "H5-mobile": {
+                    "Safari": "u",
+                    "Android Browser": "u",
+                    "微信浏览器(Android)": "u",
+                    "QQ浏览器(Android)": "u"
+                },
+                "H5-pc": {
+                    "Chrome": "u",
+                    "IE": "u",
+                    "Edge": "u",
+                    "Firefox": "u",
+                    "Safari": "u"
+                },
+                "小程序": {
+                    "微信": "u",
+                    "阿里": "u",
+                    "百度": "u",
+                    "字节跳动": "u",
+                    "QQ": "u",
+                    "钉钉": "u",
+                    "快手": "u",
+                    "飞书": "u",
+                    "京东": "u"
+                },
+                "快应用": {
+                    "华为": "u",
+                    "联盟": "u"
+                }
+            }
+        }
+    },
+    "name": "kw-slider区间滑块range范围滑动选择组件vue3版本"
+}
