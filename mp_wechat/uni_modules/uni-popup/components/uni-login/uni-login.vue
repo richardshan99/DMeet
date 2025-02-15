@@ -81,11 +81,13 @@ const oneLogin = (e: any) => {
   uni.login({
     onlyAuthorize: true,
     success: async (res) => {
+       // 打印 defaultCity.value 的值
+      console.log('defaultCity.value 的值为:', defaultCity.value);
       const result: any = await api.post("user/login", {
         code: res.code, // res.code,
         phone_code: e.detail.code,
         source_id: source.value,
-        login_area: defaultCity.value,
+        login_area: defaultCity.value.showName,  //by Richard
       });
       if (result.data != null) {
         store.dispatch("setToken", result.data.token); // 更新token

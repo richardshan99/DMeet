@@ -169,20 +169,17 @@ class User extends BaseApi
         } catch (\Exception $ex) {
             $this->renderError($ex->getMessage());
             $this->renderError("提交失败");
-        }
+        }  
+
+        //新用户注册向管理员发邮件，by Richard 
+        $subject = "有新用户注册";
+        $body = "有新用户注册，快去查看，<br>请登录DMeet直面 微信小程序查看。".Dict::EMAIL_TEXT;
+        (new \app\common\library\NewEmail)->send('richard@dmeetclub.com', $subject, $body);  
 
         if($ret !== false) {
             $this->renderSuccess([], "提交成功");
         }
-
-        //新用户注册向管理员发邮件，by Richard
-        try {  
-            $subject = "有新用户注册";
-            $body = "有新用户注册，快去查看，<br>请登录DMeet直面 微信小程序查看。".Dict::EMAIL_TEXT;
-            (new \app\common\library\NewEmail)->send('richard@dmeetclub.com', $subject, $body);                
-        } catch (\Exception $ex) {} 
-
-        $this->renderError("提交失败");
+ 
     }
 
     /**
@@ -214,7 +211,6 @@ class User extends BaseApi
             $this->renderSuccess([], "提交成功");
         }
 
-        $this->renderError("提交失败");
     }
 
     /**

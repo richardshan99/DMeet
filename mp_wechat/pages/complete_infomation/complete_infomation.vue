@@ -1,377 +1,206 @@
 <template>
   <view class="main">
-    <image
-      class="main-top"
-      :src="
-        app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'
-      "
-    ></image>
+    <image class="main-top":src="app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'"></image>
     <view class="main-base">
-      <uni-nav-bar
-        :border="false"
-        title=""
-        background-color="transparent"
-        :status-bar="true"
-      ></uni-nav-bar>
-      <image
-        :src="
-          app.config.globalProperties.$imgBase +
-          '/xlyl_meet/announcement/banner.png'
-        "
-        class="banner"
-      ></image>
-
-      <scroll-view
-        :style="{ flex: 1, minHeight: 0, width: '100%' }"
-        :scroll-y="true"
-      >
-        <view
-          :style="{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-          }"
-        >
+      <uni-nav-bar :border="false" title="" background-color="transparent" :status-bar="true"></uni-nav-bar>
+ 
+      <scroll-view :style="{ flex: 1, minHeight: 0, width: '90%' }" :scroll-y="true">
+        <view :style="{display: 'flex', flexDirection: 'column', alignItems: 'center',}">
           <text class="page_title">完善基本资料</text>
-          <text class="intro">让对方快速了解你，提高成功效率</text>
+          <text class="intro">咱这儿先面基再哔哔！资料整顶配，才有小哥哥小姐姐主动敲你哦～</text>
+          
           <view class="head">
-            <text class="title"
-              >我的照片<text :style="{ color: '#FF546F' }">*</text></text
-            >
-            <drag-img
-              keyName="path"
-              v-model="avatarList"
-              :cols="4"
-              :style="{ marginTop: '24rpx' }"
-            ></drag-img>
+            <text class="title">我的照片（尽量传多张，第一张是你的头像）</text>
+            <drag-img keyName="path" v-model="avatarList" :cols="4" :style="{ marginTop: '24rpx' }"></drag-img>
           </view>
-          <view class="identity" :style="{ marginTop: '24rpx' }">
+
+          <view class="identity" :style="{ marginTop: '24rpx' }"> 
             <view class="identity-item">
-              <text class="label"
-                >昵称<text :style="{ color: '#FF546F' }">*</text></text
-              >
-              <input
-                type="text"
-                v-model="formData.nickname"
-                class="input"
-                placeholder="请输入昵称"
-              />
+              <text class="label">昵称</text>
+              <input type="text" v-model="formData.nickname" class="input" placeholder="给自己起个好听的昵称"/>
             </view>
-            <view class="identity-item">
-              <text class="label"
-                >性别<text :style="{ color: '#FF546F' }">*</text
-                ><text class="label-intro">（选择后不可更改）</text></text
-              >
-              <view
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }"
-              >
-                <text
-                  @click="changeSex(1)"
-                  class="option"
-                  :class="formData.gender == 1 ? 'active' : ''"
-                  >男</text
-                >
-                <text
-                  @click="changeSex(2)"
-                  class="option"
-                  :class="formData.gender == 2 ? 'active' : ''"
-                  :style="{ marginLeft: '20rpx' }"
-                  >女</text
-                >
+
+            <view class="identity-item"> 
+              <text class="label">性别<text class="label-intro">（选择后不可更改）</text></text>
+              <view :style="{display: 'flex', flexDirection: 'row', alignItems: 'center',}">
+                <text @click="changeSex(1)" class="option":class="formData.gender == 1 ? 'active' : ''">男</text>
+                <text @click="changeSex(2)" class="option":class="formData.gender == 2 ? 
+                'active' : ''":style="{ marginLeft: '20rpx' }">女</text>
               </view>
             </view>
-            <view
-              class="identity-item"
-              v-for="(item, ind) in options1"
-              :key="'option1' + ind"
+
+            <!--填写生日、所在地、身高、体重、星座、籍贯、活跃地区-->
+            <view class="identity-item" 
+              v-for="(item, ind) in options1" :key="'option1' + ind" 
               @click="openPopup(item.popup, item.key)"
-              :style="{
-                borderBottom:
-                  ind == options1.length - 1 ? 'none' : '1px solid #E8EAEF;',
-              }"
-            >
-              <text class="label"
-                >{{ item.title
-                }}<text :style="{ color: '#FF546F' }">*</text></text
-              >
-              <view
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  'justify-content': 'flex-end',
-                  flex: 1,
-                  height: '100%',
-                }"
-              >
+              :style="{borderBottom:ind == options1.length - 1 ? 'none' : '1px solid #E8EAEF;',}">
+              <text class="label"> {{item.title}} </text>
+              <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',
+                    'justify-content': 'flex-end', flex: 1, height: '100%',}">
                 <text class="choose_val" v-if="item.key == 'activeRegion'">
-                  {{ active_Name == "" ? "请选择活跃区域" : active_Name }}
+                  {{ active_Name == "" ? "请选择活跃区域" : active_Name }}</text>
+                <text v-else class="choose_val">{{ formData[item.show]}}
+                  {{item.key == "height" && formData[item.show] != null? "cm": ""}}
+                  {{item.key == "weight" && formData[item.show] != null? "kg": ""}}
                 </text>
-                <text v-else class="choose_val"
-                  >{{ formData[item.show]
-                  }}{{
-                    item.key == "weight" && formData[item.show] != null
-                      ? "kg"
-                      : ""
-                  }}{{
-                    item.key == "height" && formData[item.show] != null
-                      ? "cm"
-                      : ""
-                  }}</text
-                >
-                <image
-                  class="arrow_left"
-                  src="/static/mine_center/arrow_left.png"
-                ></image>
+                <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </view>
           </view>
 
           <view class="identity" :style="{ marginTop: '24rpx' }">
             <view class="identity-item">
-              <text class="label"
-                >学校<text
-                  v-if="
-                    formRules['school'] != null && formRules['school'].required
-                  "
-                  :style="{ color: '#FF546F' }"
-                  >*</text
-                ></text
-              >
-              <input
-                type="text"
-                v-model="formData.school"
-                class="input"
-                placeholder="请输入学校名称"
-              />
+              <text class="label">学校</text>
+              <input type="text" v-model="formData.school"
+                class="input" placeholder="请输入学校名称"/>
             </view>
+
             <view class="identity-item" @click="openPopup(educationPopup)">
-              <text class="label"
-                >学历<text
-                  v-if="
-                    formRules['education_type'] != null &&
-                    formRules['education_type'].required
-                  "
-                  :style="{ color: '#FF546F' }"
-                  >*</text
-                ></text
-              >
-              <view
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  'justify-content': 'flex-end',
-                  flex: 1,
-                  height: '100%',
-                }"
-              >
-                <text class="choose_val">{{
-                  formData.education_type_name
-                }}</text>
-                <image
-                  class="arrow_left"
-                  src="/static/mine_center/arrow_left.png"
-                ></image>
+              <text class="label">学历</text>
+              <view :style="{display: 'flex', flexDirection: 'row', alignItems: 'center', 'justify-content': 'flex-end', flex: 1, height: '100%',}">
+                <text class="choose_val">{{formData.education_type_name}}</text>
+                <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </view>
+
             <view class="identity-item" @click="openPopup(workPopup)">
-              <text class="label"
-                >工作情况<text
-                  v-if="
-                    formRules['work_type'] != null &&
-                    formRules['work_type'].required
-                  "
-                  :style="{ color: '#FF546F' }"
-                  >*</text
-                ></text
-              >
-              <view
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  'justify-content': 'flex-end',
-                  flex: 1,
-                  height: '100%',
-                }"
-              >
+              <text class="label">职业</text>
+              <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center', 'justify-content': 'flex-end', flex: 1,height: '100%',}">
                 <text class="choose_val">{{ formData.work_type_name }}</text>
-                <image
-                  class="arrow_left"
-                  src="/static/mine_center/arrow_left.png"
-                ></image>
+                <image  class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </view>
-            <view
-              class="identity-item"
-              @click="openPopup(salaryPopup)"
-              :style="{ 'border-bottom': 'none' }"
-            >
-              <text class="label"
-                >年收入<text
-                  v-if="
-                    formRules['salary'] != null && formRules['salary'].required
-                  "
-                  :style="{ color: '#FF546F' }"
-                  >*</text
-                ></text
-              >
-              <view
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  'justify-content': 'flex-end',
-                  flex: 1,
-                  height: '100%',
-                }"
-              >
+
+            <view class="identity-item" @click="openPopup(salaryPopup)":style="{ 'border-bottom': 'none' }">
+              <text class="label">年收入</text>
+              <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',
+                  'justify-content': 'flex-end',flex: 1,height: '100%',}">
                 <text class="choose_val">{{ formData.salary }}</text>
-                <image
-                  class="arrow_left"
-                  src="/static/mine_center/arrow_left.png"
-                ></image>
+                <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </view>
           </view>
 
-          <!-- 手机号 -->
           <view class="phone-code-box1">
             <view class="cell">
-              <view class="lable"
-                >手机号<text :style="{ color: '#FF546F' }">*</text></view
-              >
+              <view class="lable">手机号</view>
               <view class="value">
-                <input
-                  style="text-align: right"
-                  type="number"
-                  v-model="phone"
-                  class="input"
-                  placeholder="请输入手机号"
-                />
+                <input style="text-align: right" type="number" v-model="phone"
+                  class="input" placeholder="请输入手机号"/>
               </view>
             </view>
           </view>
 
           <view class="phone-code-box">
             <view class="cell">
-              <view class="lable"
-                >邮箱<text :style="{ color: '#FF546F' }">*</text></view
-              >
+              <view class="lable">邮箱</view>
               <view class="value">
-                <input
-                  style="text-align: right"
-                  type="text"
-                  v-model="email"
-                  class="input"
-                  placeholder="请输入邮箱"
-                />
+                <input style="text-align: right" type="text" v-model="email"
+                  class="input" placeholder="请输入邮箱"/>
               </view>
             </view>
+
             <view class="cell">
-              <view class="lable"
-                >验证码<text :style="{ color: '#FF546F' }">*</text></view
-              >
+              <view class="lable">验证码</view>
               <view class="code">
-                <input
-                  style="text-align: right"
-                  type="text"
-                  v-model="email_code"
-                  class="input phone_code"
-                  placeholder="填写验证码"
-                />
+                <input style="text-align: right" type="text" v-model="email_code"
+                  class="input phone_code" placeholder="填写验证码"/>
                 <view class="segmentation"></view>
                 <view class="text" @click="getSenCode"> {{ phone_text }}</view>
               </view>
             </view>
           </view>
-
-          <!-- <view class="identity" :style="{marginTop: '24rpx'}">
-						<view class="identity-item" v-for="(item,index) in selfList" :key="'self'+index" :style="{'border-bottom': (index == selfList.length - 1?'none':''),alignItems: ((item.type == 3||item.type==10)?'flex-start':'center')}">
-							<text :style="{marginTop: ((item.type == 3||item.type==10)?'10rpx':'0')}" class="label">{{item.name}}<text v-if="item.is_require == 1" :style="{color:'#FF546F'}">*</text></text>
-							<input v-if="item.type == 2" type="text" v-model="formData[item.key]" class="input" placeholder="请输入昵称"/>
-							<textarea v-else-if="item.type == 3" v-model="formData[item.key]" :style="{height:'140rpx',flex:1, fontSize:'28rpx',padding:'10rpx 10rpx',boxSizing:'border-box' }"></textarea>
-							<picker v-else-if="item.type == 5" @change="changePickerDay($event,item.key)" mode="date" :style="{ flex: 1,height: '100%' }" :value="formData[item.key]">
-								<view :style="{display:'flex',flexDirection:'row',alignItems:'center','justify-content':'flex-end',width: '100%',height:'108rpx'}">
-									<text class="choose_val">{{formData[item.key]}}</text>
-									<image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
-								</view>
-							</picker>
-							<input v-else-if="item.type == 7" v-model="formData[item.key]" type="digit" :style="{ flex:1,fontSize:'28rpx',textAlign:'right'}"/>
-							<uni-region-city :areaName="item.content.name" :title="item.name" v-else-if="item.type == 8" :style="{flex: 1,height: '108rpx'}" @confirm="confirmRegion($event,item.key)"></uni-region-city>
-							<picker v-else-if="item.type == 9" @change="choosePickerValue($event,item.key,item.content)" mode="selector" :range="item.content" range-key="title" :style="{ flex: 1,height: '100%' }">
-								<view :style="{display:'flex',flexDirection:'row',alignItems:'center','justify-content':'flex-end',width: '100%',height:'108rpx'}">
-									<text class="choose_val">{{formData[item.key+'_name']}}</text>
-									<image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
-								</view>
-							</picker>
-							<uni-data-checkbox :style="{flex: 1,marginLeft: '20rpx',fontSize:'28rpx'}" multiple v-else-if="item.type == 10" :map="{text:'title',value:'value'}" :localdata="item.content" :value="formData[item.key].split(',')" @change="changeMultiPicker($event,item.key)"></uni-data-checkbox>
-						</view>
-					</view> -->
         </view>
 
         <view class="start_base">
-          <button @click="openJourney" class="start_base-btn">
-            <text>开启见面之旅</text>
-          </button>
+          <button @click="openJourney" class="start_base-btn"><text>保存</text></button>
         </view>
       </scroll-view>
     </view>
 
-    <uni-popup ref="salaryPopup" type="bottom">
+    
+    <uni-popup ref="birthPopup" type="bottom">
       <view class="popup_stature">
         <view class="top">
-          <text @click="closePopup(salaryPopup)" class="top-cancel">取消</text>
-          <text class="top-title">选择年收入</text>
-          <text @click="confirmBottom('salary')" class="top-confirm">确定</text>
+          <text @click="closePopup(birthPopup)" class="top-cancel">取消</text>
+          <text class="top-title">选择生日</text>
+          <text @click="confirmVal('birth')" class="top-confirm">确定</text>
         </view>
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.salary"
-          @change="changePicker('salary', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
+        <picker-view immediate-change="true" :value="nowOptions.nowBirth"
+          @change="changePicker('nowBirth', $event)" class="picker" indicator-style="height:48px">
           <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in salaryList"
-              :key="'picker_salary' + ind"
-            >
-              <text>{{ item }}</text>
+            <view class="picker-item" v-for="(item, ind) in years":key="'year' + ind">
+              <text>{{ item }}年</text>
+            </view>
+          </picker-view-column>
+          <picker-view-column>
+            <view class="picker-item" v-for="(item, ind) in months":key="'month' + ind">
+              <text>{{ item }}月</text>
+            </view>
+          </picker-view-column>
+          <picker-view-column>
+            <view class="picker-item" v-for="(item, ind) in daysList":key="'day' + ind">
+              <text>{{ item }}日</text>
             </view>
           </picker-view-column>
         </picker-view>
       </view>
     </uni-popup>
 
-    <uni-popup ref="workPopup" type="bottom">
+    <uni-popup ref="areaPopup" type="bottom">
+      <city-select title="所在地" :nowOption="nowOptions.permanent_area" @confirm="confirmArea"></city-select>
+    </uni-popup>
+    <uni-popup ref="homeTownPopup" type="bottom">
+      <city-select :nowOption="nowOptions.hometown" @confirm="confirmHomeTown"></city-select>
+    </uni-popup>
+
+    <uni-popup ref="staturePopup" type="bottom">
       <view class="popup_stature">
         <view class="top">
-          <text @click="closePopup(workPopup)" class="top-cancel">取消</text>
-          <text class="top-title">选择工作情况</text>
-          <text @click="confirmBottom('work_type')" class="top-confirm"
-            >确定</text
-          >
+          <text @click="closePopup(staturePopup)" class="top-cancel">取消</text>
+          <text class="top-title">选择身高</text>
+          <text @click="confirmVal('height')" class="top-confirm">确定</text>
         </view>
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.work_type"
-          @change="changePicker('work_type', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
+        <picker-view immediate-change="true":value="nowOptions.height"
+          @change="changePicker('height', $event)" class="picker" indicator-style="height:48px">
           <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in workTypeList"
-              :key="'picker_work_type' + ind"
-            >
+            <view class="picker-item" v-for="(item, ind) in heightList":key="'picker_height' + ind">
+              <text>{{ item }}cm</text>
+            </view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+    </uni-popup>
+
+    <uni-popup ref="weightPopup" type="bottom">
+      <view class="popup_stature">
+        <view class="top">
+          <text @click="closePopup(weightPopup)" class="top-cancel">取消</text>
+          <text class="top-title">选择体重</text>
+          <text @click="confirmVal('weight')" class="top-confirm">确定</text>
+        </view>
+        <picker-view immediate-change="true":value="nowOptions.weight"
+          @change="changePicker('weight', $event)" class="picker" indicator-style="height:48px">
+          <picker-view-column>
+            <view class="picker-item" v-for="(item, ind) in weightList":key="'picker_weight' + ind">
+              <text>{{ item }}kg</text>
+            </view>
+          </picker-view-column>
+        </picker-view>
+      </view>
+    </uni-popup>
+    
+    <uni-popup ref="constellationPopup" type="bottom">
+      <view class="popup_stature">
+        <view class="top">
+          <text @click="closePopup(constellationPopup)" class="top-cancel">取消</text>
+          <text class="top-title">选择星座</text>
+          <text @click="confirmVal('constellation')" class="top-confirm">确定</text>
+        </view>
+        <picker-view immediate-change="true":value="nowOptions.constellation"
+          @change="changePicker('constellation', $event)" class="picker" indicator-style="height:48px">
+          <picker-view-column>
+            <view class="picker-item" v-for="(item, ind) in constellationList":key="'picker_constellation' + ind">
               <text>{{ item.name }}</text>
             </view>
           </picker-view-column>
@@ -382,173 +211,57 @@
     <uni-popup ref="educationPopup" type="bottom">
       <view class="popup_stature">
         <view class="top">
-          <text @click="closePopup(educationPopup)" class="top-cancel"
-            >取消</text
-          >
+          <text @click="closePopup(educationPopup)" class="top-cancel">取消</text>
           <text class="top-title">选择学历</text>
-          <text @click="confirmBottom('education_type')" class="top-confirm"
-            >确定</text
-          >
+          <text @click="confirmBottom('education_type')" class="top-confirm">确定</text>
         </view>
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.education_type"
-          @change="changePicker('education_type', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
+        <picker-view immediate-change="true":value="nowOptions.education_type"
+          @change="changePicker('education_type', $event)" class="picker" indicator-style="height:48px">
           <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in educationalList"
-              :key="'picker_education_type' + ind"
-            >
+            <view class="picker-item" v-for="(item, ind) in educationalList":key="'picker_education_type' + ind">
               <text>{{ item.name }}</text>
             </view>
           </picker-view-column>
         </picker-view>
       </view>
     </uni-popup>
-    <uni-popup ref="constellationPopup" type="bottom">
+
+    <uni-popup ref="workPopup" type="bottom">
       <view class="popup_stature">
         <view class="top">
-          <text @click="closePopup(constellationPopup)" class="top-cancel"
-            >取消</text
-          >
-          <text class="top-title">选择星座</text>
-          <text @click="confirmVal('constellation')" class="top-confirm"
-            >确定</text
-          >
+          <text @click="closePopup(workPopup)" class="top-cancel">取消</text>
+          <text class="top-title">选择职业</text>
+          <text @click="confirmBottom('work_type')" class="top-confirm">确定</text>
         </view>
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.constellation"
-          @change="changePicker('constellation', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
+        <picker-view immediate-change="true" :value="nowOptions.work_type"
+          @change="changePicker('work_type', $event)" class="picker" indicator-style="height:48px">
           <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in constellationList"
-              :key="'picker_constellation' + ind"
-            >
+            <view class="picker-item" v-for="(item, ind) in workTypeList":key="'picker_work_type' + ind">
               <text>{{ item.name }}</text>
             </view>
           </picker-view-column>
         </picker-view>
       </view>
     </uni-popup>
-    <uni-popup ref="staturePopup" type="bottom">
+
+    <uni-popup ref="salaryPopup" type="bottom">
       <view class="popup_stature">
         <view class="top">
-          <text @click="closePopup(staturePopup)" class="top-cancel">取消</text>
-          <text class="top-title">选择身高</text>
-          <text @click="confirmVal('height')" class="top-confirm">确定</text>
+          <text @click="closePopup(salaryPopup)" class="top-cancel">取消</text>
+          <text class="top-title">选择年收入</text>
+          <text @click="confirmBottom('salary')" class="top-confirm">确定</text>
         </view>
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.height"
-          @change="changePicker('height', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
+        <picker-view immediate-change="true":value="nowOptions.salary"
+          @change="changePicker('salary', $event)" class="picker" indicator-style="height:48px">
           <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in heightList"
-              :key="'picker_height' + ind"
-            >
-              <text>{{ item }}cm</text>
+            <view class="picker-item" v-for="(item, ind) in salaryList":key="'picker_salary' + ind">
+              <text>{{ item }}</text>
             </view>
           </picker-view-column>
         </picker-view>
       </view>
     </uni-popup>
-    <uni-popup ref="weightPopup" type="bottom">
-      <view class="popup_stature">
-        <view class="top">
-          <text @click="closePopup(weightPopup)" class="top-cancel">取消</text>
-          <text class="top-title">选择体重</text>
-          <text @click="confirmVal('weight')" class="top-confirm">确定</text>
-        </view>
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.weight"
-          @change="changePicker('weight', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
-          <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in weightList"
-              :key="'picker_weight' + ind"
-            >
-              <text>{{ item }}kg</text>
-            </view>
-          </picker-view-column>
-        </picker-view>
-      </view>
-    </uni-popup>
-    <uni-popup ref="birthPopup" type="bottom">
-      <view class="popup_stature">
-        <view class="top">
-          <text @click="closePopup(birthPopup)" class="top-cancel">取消</text>
-          <text class="top-title">选择生日</text>
-          <text @click="confirmVal('birth')" class="top-confirm">确定</text>
-        </view>
-        <!-- @change="changePicker('nowBirth',$event)" -->
-        <picker-view
-          immediate-change="true"
-          :value="nowOptions.nowBirth"
-          @change="changePicker('nowBirth', $event)"
-          class="picker"
-          indicator-style="height:48px"
-        >
-          <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in years"
-              :key="'year' + ind"
-            >
-              <text>{{ item }}年</text>
-            </view>
-          </picker-view-column>
-          <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in months"
-              :key="'month' + ind"
-            >
-              <text>{{ item }}月</text>
-            </view>
-          </picker-view-column>
-          <picker-view-column>
-            <view
-              class="picker-item"
-              v-for="(item, ind) in daysList"
-              :key="'day' + ind"
-            >
-              <text>{{ item }}日</text>
-            </view>
-          </picker-view-column>
-        </picker-view>
-      </view>
-    </uni-popup>
-    <uni-popup ref="areaPopup" type="bottom">
-      <city-select
-        title="所在地"
-        :nowOption="nowOptions.permanent_area"
-        @confirm="confirmArea"
-      ></city-select>
-    </uni-popup>
-    <uni-popup ref="homeTownPopup" type="bottom">
-      <city-select
-        :nowOption="nowOptions.hometown"
-        @confirm="confirmHomeTown"
-      ></city-select>
-    </uni-popup>
+
   </view>
 </template>
 
@@ -565,11 +278,11 @@ const formRules = reactive({
   nickname: { message: "昵称不能为空", required: true, type: "string" },
   gender: { message: "请选择性别", required: true },
   birth: { required: true, type: "string", message: "请选择生日" },
-  height: { required: true, message: "请选择身高" },
-  permanent_area: { required: true, message: "请选择所在地" },
+   permanent_area: { required: true, message: "请选择所在地" },
+   height: { required: true, message: "请选择身高" },
   weight: { required: true, message: "请选择体重" },
   constellation: { required: true, message: "请选择星座" },
-  hometown: { required: true, message: "请选择出生地" },
+  hometown: { required: true, message: "请选择籍贯" },
 });
 const store = useStore();
 const app = getCurrentInstance().appContext.app;
@@ -600,9 +313,10 @@ const nowOptions = reactive({
   salary: [0],
 });
 
-const staturePopup = ref(); //身高弹窗
+
 const birthPopup = ref(); // 生日弹窗
 const areaPopup = ref(); //区域弹窗
+const staturePopup = ref(); //身高弹窗
 const weightPopup = ref(); //重量弹窗
 const constellationPopup = ref(); // 星座弹窗
 const homeTownPopup = ref(); // 家乡
@@ -679,11 +393,7 @@ onLoad(async () => {
         key: "permanent_area",
         popup: areaPopup.value,
         title: "所在地",
-      },
-      {
-        key: "activeRegion",
-        title: "活跃区域",
-      },
+      }, 
       {
         key: "height",
         show: "height",
@@ -708,6 +418,10 @@ onLoad(async () => {
         popup: homeTownPopup.value,
         title: "籍贯",
       },
+      {
+        key: "activeRegion",
+        title: "活跃区域",
+      },      
 
     ];
     //
@@ -850,27 +564,12 @@ onLoad(async () => {
           if (formData.salary == null || formData.salary.length <= 0) {
             formData.salary = salaryInfo.value;
           }
-          // selfList.value = vres.data.self
-          // for(const xdom of vres.data.self) {
-          // 	if (xdom.is_require == 1) {
-          // 		formRules[xdom.key] = { required: true,type: 'string', message: xdom.name+'不得为空' }
-          // 	}
-          // 	if (xdom.value != null && xdom.value.length > 0) {
-          // 		formData[xdom.key] = xdom.value
-          // 		if (xdom.type == 9) {
-          // 			let selectedInfo = xdom.content.find(uitem => (uitem.value == xdom.value))
-          // 			formData[xdom.key+'_name'] = selectedInfo.title
-          // 		}
-          // 		if (xdom.type == 8) {
-          // 			formData[xdom.key+'_name'] = xdom.content.name
-          // 		}
-          // 	}
-          // }
         }
       });
     });
   }
 });
+
 //获取workTypeList
 const getWorkTypes = async () => {
   const res: any = await api.post("common/work_type_list");
@@ -1128,7 +827,7 @@ const confirmBottom = (key: string) => {
 const confirmVal = (key: string, tab = 0) => {
   switch (key) {
     case "birth":
-      const res = nowOptions["nowBirth"];
+      const res = nowOptions["nowBirth"];      
       formData[key] = [
         years[res[0]],
         months[res[1]],
@@ -1163,6 +862,7 @@ const confirmVal = (key: string, tab = 0) => {
 const closePopup = (e: any) => {
   e.close();
 };
+
 const openPopup = (e: any, type = null) => {
   console.log(e);
   console.log(type);
@@ -1186,24 +886,13 @@ const openPopup = (e: any, type = null) => {
             active_Name.value = address;
           },
         });
-        // uni.request({
-        //   url: `https://apis.map.qq.com/ws/coord/v1/translate?locations=${latitude},${longitude}&type=1&key=VMTBZ-2FKKJ-Y3MFY-XKS2T-ZXIXJ-QVFP5`,
-        //   method: "GET",
-        //   success: (rsp) => {
-        //     console.log(rsp);
-
-        //     const lat = rsp.data.locations[0].lat;
-        //     const lng = rsp.data.locations[0].lng;
-        //     console.log(rsp.data, "精准的很");
-
-        //   },
-        // });
       },
     });
   } else {
     e.open();
   }
 };
+
 const changeSex = (sex: number) => {
   if (formData.gender != sex) {
     formData.gender = sex;
@@ -1239,16 +928,16 @@ const changeSex = (sex: number) => {
       margin-top: 16rpx;
     }
     .page_title {
-      margin-top: 48rpx;
-      font-size: 48rpx;
+      margin-top: 10rpx;
+      font-size: 36rpx;
       color: #1d2129;
       font-weight: 600;
       text-align: center;
     }
     .intro {
       margin-top: 8rpx;
-      font-size: 28rpx;
-      color: #868d9c;
+      font-size: 30rpx;
+      color: #333;
     }
 
     .head {
@@ -1264,7 +953,7 @@ const changeSex = (sex: number) => {
       min-height: 44rpx;
       position: relative;
       .title {
-        font-size: 32rpx;
+        font-size: 30rpx;
         font-weight: 500;
         color: #1d2129;
       }
@@ -1573,12 +1262,12 @@ const changeSex = (sex: number) => {
 
   .start_base {
     margin-top: 64rpx;
-    width: 100%;
+    width: 90%;
     background-color: #fff;
     padding: 16rpx 32rpx 42px 32rpx;
     box-sizing: border-box;
     &-btn {
-      width: 686rpx;
+      width: 600rpx;
       height: 88rpx;
       background: linear-gradient(96deg, #4a97e7, #b57aff 100%);
       border-radius: 44rpx;

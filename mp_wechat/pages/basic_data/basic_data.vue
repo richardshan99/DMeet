@@ -18,48 +18,25 @@
       ></uni-nav-bar>
       <view class="scroll">
         <view class="data">
-          <view
-            v-for="(item, index) in optionsTop"
+          <view v-for="(item, index) in optionsTop"
             @click="openSelect(item)"
             class="data-item"
             :key="'optionTop' + index"
-            :class="{ bd: index < optionsTop.length - 1 }"
-          >
-            <text class="label"
-              >{{ item.label
-              }}<text :style="{ color: '#FF546F' }">*</text></text
-            >
-            <view
-              :style="{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }"
-            >
-              <input
-                :disabled="item.disabled"
+            :class="{ bd: index < optionsTop.length - 1 }">
+            <text class="label">{{ item.label}}</text>
+            <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}">
+              <input :disabled="item.disabled"
                 v-if="item.type == 'input'"
                 type="text"
                 v-model="basicInfo[item.key]"
-                class="input"
-              />
-              <text v-else-if="item.key == 'weight'" class="value"
-                >{{ basicInfo[item.showKey] }}kg</text
-              >
-              <text v-else-if="item.key == 'height'" class="value"
-                >{{ basicInfo[item.showKey] }}cm</text
-              >
+                class="input"/> 
+              <text v-else-if="item.key == 'height'" class="value">{{ basicInfo[item.showKey] }}cm</text>
+              <text v-else-if="item.key == 'weight'" class="value">{{ basicInfo[item.showKey] }}kg</text>
               <text v-else-if="item.key == 'activeRegion'" class="value">
-                {{ active_Name == "" ? "请选择活跃区域" : active_Name }}</text
-              >
-
+                {{ active_Name == "" ? "请选择活跃区域" : active_Name }}</text>
               <text v-else class="value">{{ basicInfo[item.showKey] }}</text>
-
-              <image
-                v-if="item.type == 'select'"
-                src="/static/mine_center/arrow_left.png"
-                class="arrow"
-              ></image>
+              <image v-if="item.type == 'select'"
+                src="/static/mine_center/arrow_left.png" class="arrow"></image>
             </view>
           </view>
         </view>
@@ -69,24 +46,12 @@
             @click="openSelect(item)"
             class="data-item"
             :key="'optionBottom' + index"
-            :class="{ bd: index < optionsBottom.length - 1 }"
-          >
-            <text class="label"
-              >{{ item.label
-              }}<text
-                v-if="
-                  formRules[item.key] != null && formRules[item.key].required
-                "
-                :style="{ color: '#FF546F' }"
-                >*</text
-              ></text
-            >
-            <view
-              :style="{
+            :class="{ bd: index < optionsBottom.length - 1 }">
+            <text class="label">{{ item.label}}</text>
+            <view :style="{
                 display: 'flex',
                 flexDirection: 'row',
-                alignItems: 'center',
-              }"
+                alignItems: 'center',}"
             >
               <input
                 v-if="item.type == 'input'"
@@ -173,25 +138,14 @@
                 item.type == 3 || item.type == 10 ? 'flex-start' : 'center',
             }"
           >
-            <text
-              :style="{
-                marginTop: item.type == 3 || item.type == 10 ? '10rpx' : '0',
-              }"
-              class="label"
-              >{{ item.name
-              }}<text v-if="item.is_require == 1" :style="{ color: '#FF546F' }"
-                >*</text
-              ></text
-            >
-            <input
-              v-if="item.type == 2"
+            <text :style="{marginTop: item.type == 3 || item.type == 10 ? '10rpx' : '0',}"
+              class="label">{{ item.name}}</text>
+            <input v-if="item.type == 2"
               type="text"
               v-model="basicInfo[item.key]"
               class="input"
-              placeholder="请输入昵称"
-            />
-            <textarea
-              v-else-if="item.type == 3"
+              placeholder="请输入昵称"/>
+            <textarea v-else-if="item.type == 3"
               v-model="basicInfo[item.key]"
               :style="{
                 height: '140rpx',
@@ -201,32 +155,24 @@
                 boxSizing: 'border-box',
               }"
             ></textarea>
-            <picker
-              v-else-if="item.type == 5"
+            <picker v-else-if="item.type == 5"
               @change="changePickerDay($event, item.key)"
               mode="date"
               :style="{ flex: 1, height: '100%' }"
               :value="basicInfo[item.key]"
             >
-              <view
-                :style="{
-                  display: 'flex',
+              <view :style="{display: 'flex',
                   flexDirection: 'row',
                   alignItems: 'center',
                   'justify-content': 'flex-end',
                   width: '100%',
                   height: '108rpx',
-                }"
-              >
+                }">
                 <text class="choose_val">{{ basicInfo[item.key] }}</text>
-                <image
-                  class="arrow_left"
-                  src="/static/mine_center/arrow_left.png"
-                ></image>
+                <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </picker>
-            <input
-              v-else-if="item.type == 7"
+            <input v-else-if="item.type == 7"
               v-model="basicInfo[item.key]"
               type="digit"
               :style="{ flex: 1, fontSize: '28rpx', textAlign: 'right' }"
@@ -753,8 +699,7 @@ onLoad(() => {
     basicInfo.salary = userInfo.value.salary;
   }
   const birthList = basicInfo.birth.split("-");
-  // 加载
-  for (let year = 1950; year <= new Date().getFullYear(); year++) {
+  for (let year = 1970; year <= new Date().getFullYear(); year++) {
     years.value.push(year);
   }
   for (let month = 1; month <= 12; month++) {
@@ -771,8 +716,8 @@ onLoad(() => {
   }
   nextTick(() => {
     optionsTop[1].popInfo = birthPopup.value;
-    optionsTop[2].popInfo = heightPopup.value;
-    optionsTop[3].popInfo = areaPopup.value;
+    optionsTop[2].popInfo = areaPopup.value;
+    optionsTop[3].popInfo = heightPopup.value;
     optionsTop[4].popInfo = weightPopup.value;
     optionsTop[5].popInfo = constellPopup.value;
     optionsTop[6].popInfo = homePopup.value;
