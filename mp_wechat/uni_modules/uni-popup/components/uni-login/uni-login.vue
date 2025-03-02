@@ -74,7 +74,7 @@ const oneLogin = (e: any) => {
   if (e.detail.code == null) {
     uni.showToast({
       icon: "none",
-      title: e.detail.errMsg,
+      title: "oneLogin的e.detail.code == null",
     });
     return;
   }

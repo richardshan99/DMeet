@@ -71,10 +71,6 @@
 		}
 		api.post(url,data).then((res:any) => {
 			if(res.code == 1) {
-				uni.showToast({
-					icon: 'none',
-					title:res.msg
-				})
 				switch(pageType) {
 					case 1:
 						store.commit('setAbout',content.value)
@@ -82,8 +78,7 @@
 					case 2:
 						store.commit('setmyExpect',content.value)
 					break;
-				}
-				
+				}				
 				setTimeout(() => {
 					uni.navigateBack()
 				},1000)

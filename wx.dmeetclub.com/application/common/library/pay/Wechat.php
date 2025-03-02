@@ -356,13 +356,11 @@ class Wechat extends Base
                     'transfer_amount' => (int)bcmul($price, 100, 0), //分
                     'transfer_remark' => '转账',
                     'openid' => $this->user->openid ?: "",
-                    // 'user_name' => '闫嵩达'  // 明文传参即可，sdk 会自动加密
                 ],
             ],
         ];
 
         $result = Pay::wechat()->transfer($order)->toArray();
-        // var_dump($result);die;
         return true;
     }
     

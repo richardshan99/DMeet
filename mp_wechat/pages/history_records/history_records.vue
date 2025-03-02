@@ -429,10 +429,18 @@ const position = ref("");
 
 const invitations = ref([]);
 onLoad(() => {
-  statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight;
-  right_distance.value =
-    uni.getSystemInfoSync().windowWidth -
-    uni.getMenuButtonBoundingClientRect().left;
+//  statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight;
+//  right_distance.value =  uni.getSystemInfoSync().windowWidth - uni.getMenuButtonBoundingClientRect().left;
+  uni.getSystemInfo({
+    success: (res) => {
+        statusBarHeight.value = res.statusBarHeight;        
+        const menuButtonInfo = uni.getMenuButtonBoundingClientRect(); // 获取胶囊按钮的位置信息        
+        right_distance.value = res.windowWidth - menuButtonInfo.left; // 计算右侧距离
+    },
+    fail: (err) => {
+        console.error('获取系统信息失败:', err);
+    }
+});
   getInvitations();
 });
 
@@ -468,7 +476,7 @@ const changeAgree = async (item, type) => {
     getInvitations();
     uni.showToast({
       icon: "none",
-      title: "已同意",
+      title: "对方已同意",
     });
     setTimeout(() => {
       uni.hideToast();
@@ -476,7 +484,7 @@ const changeAgree = async (item, type) => {
   } else {
     uni.showToast({
       icon: "none",
-      title: res.msg,
+      title:"对方已拒绝",
     });
     setTimeout(() => {
       uni.hideToast();
@@ -711,20 +719,18 @@ const cancelInvitation = async (id: string) => {
     //
     uni.showToast({
       icon: "none",
-      title: res.msg,
+      title: "邀约取消成功",
     });
     getInvitations();
   }
 };
 
 const rejectInvitation = async () => {
-  // toggleBottomBar(true)
-  // 拒绝
   const res: any = await api.post("/invite/revoke", { invite_id: rejectId });
   if (res.code == 1) {
     uni.showToast({
       icon: "none",
-      title: res.msg,
+      title: "邀约已拒绝",
     });
     getInvitations();
   }
@@ -771,10 +777,6 @@ const payNow = async () => {
       });
     } else {
       getInvitations();
-      uni.showToast({
-        icon: "none",
-        title: res.msg,
-      });
     }
   }
 };
@@ -785,7 +787,7 @@ const refuseInvitation = async (id: string) => {
   if (res.code == 1) {
     uni.showToast({
       icon: "none",
-      title: res.msg,
+      title: "invite/reject返回成功",
     });
     getInvitations();
   }

@@ -739,7 +739,6 @@ if (!function_exists('checkContent')) {
         }
 
         $wxUser = new WxUser(\think\Env::get('mini.appid'), \think\Env::get('mini.appsecret'));
-        // var_dump($wxUser->accessToken());die;
         $url = "https://api.weixin.qq.com/wxa/msg_sec_check?access_token=".$wxUser->accessToken();
         $data = [
             'content' => $content,

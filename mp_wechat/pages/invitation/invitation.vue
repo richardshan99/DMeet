@@ -627,7 +627,7 @@ const changeAgree = async (item, type) => {
   } else {
     uni.showToast({
       icon: "none",
-      title: res.msg,
+      title:"未同意",
     });
     setTimeout(() => {
       uni.hideToast();
@@ -747,24 +747,13 @@ const revokeInvitation = (id: string) => {
 const cancelInvitation = async (id: string) => {
   const res: any = await api.post("invite/cancel", { invite_id: id });
   if (res.code == 1) {
-    //
-    uni.showToast({
-      icon: "none",
-      title: res.msg,
-    });
     getInvitations();
   }
 };
 
 const rejectInvitation = async () => {
-  // toggleBottomBar(true)
-  // 拒绝
   const res: any = await api.post("/invite/revoke", { invite_id: rejectId });
   if (res.code == 1) {
-    uni.showToast({
-      icon: "none",
-      title: res.msg,
-    });
     getInvitations();
   }
 };
@@ -772,7 +761,6 @@ const rejectInvitation = async () => {
 // 同意操作
 const agree = (item: any) => {
   console.log(item);
-
   chooseItme.value = item;
   selectInvitation.id = item.id;
   selectInvitation.price = item.price;
@@ -814,10 +802,6 @@ const payNow = async () => {
       });
     } else {
       getInvitations();
-      uni.showToast({
-        icon: "none",
-        title: res.msg,
-      });
     }
   }
 };

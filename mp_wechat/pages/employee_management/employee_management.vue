@@ -76,7 +76,7 @@
 					if (res.code == 1) {
 						uni.showToast({
 							icon:'none',
-							title: res.msg
+							title: "修改员工权限成功",
 						})
 						getEmployeeList(true)
 					}
@@ -97,7 +97,7 @@
 					if (vres.code == 1) {
 						uni.showToast({
 							icon: 'none',
-							title: vres.msg
+							title: "删除员工成功",
 						})
 						getEmployeeList(true)
 					}

@@ -1,141 +1,58 @@
 <template>
   <view class="content">
-    <image
-      class="content-top"
-      :src="
-        app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'
-      "
-    ></image>
+    <image class="content-top" :src="app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'"></image>
     <view class="content-base">
-      <uni-nav-bar
-        :border="false"
-        title=" "
-        background-color="transparent"
-        :status-bar="true"
-      ></uni-nav-bar>
+    <uni-nav-bar :border="false" title=" " background-color="transparent" :status-bar="true"></uni-nav-bar>
       <view class="userInfo" @click="toLogin">
-        <image
-          mode="aspectFill"
-          v-if="token != null && isImprove == 1"
-          class="userInfo-real"
-          :src="userInfo.avatar_text"
-        ></image>
-        <image
-          v-else
-          src="/static/mine_center/non_login.png"
-          class="userInfo-icon"
-        />
-        <view v-if="token != null && isImprove == 1" class="userInfo-desc">
+        <image mode="aspectFill" v-if="token != null" class="userInfo-real":src="userInfo.avatar_text"></image>
+        <image v-else src="/static/mine_center/non_login.png" class="userInfo-icon"/>
+		
+        <view v-if="token != null && isImprove != -1" class="userInfo-desc">
           <view class="line1">
             <text class="line1-txt">{{ userInfo.nickname }}</text>
-            <image
-              v-if="userInfo.gender == 1"
-              src="/static/sex_man.png"
-              class="line1-sex"
-            ></image>
-            <image
-              v-if="userInfo.gender == 2"
-              src="/static/sex_woman.png"
-              class="line1-sex"
-            ></image>
-            <image
-              v-if="userInfo?.is_member == 1"
-              src="/static/vip_icon.png"
-              class="line1-vip"
-            ></image>
-            <image
-              v-if="userInfo.is_cert_realname == 1"
-              class="line1-vip"
-              src="/static/person/confirm_name.png"
-            ></image>
-            <image
-              v-if="userInfo.is_cert_education == 1"
-              class="line1-vip"
-              src="/static/person/edu.png"
-            ></image>
+            <image v-if="userInfo.gender == 1" src="/static/sex_man.png" class="line1-sex"></image>
+            <image v-if="userInfo.gender == 2" src="/static/sex_woman.png" class="line1-sex"></image>
+            <image v-if="userInfo?.is_member == 1" src="/static/vip_icon.png" class="line1-vip"></image>
+            <image v-if="userInfo.is_cert_realname == 1" class="line1-vip" src="/static/person/confirm_name.png"></image>
+            <image v-if="userInfo.is_cert_education == 1" class="line1-vip" src="/static/person/edu.png"></image>
           </view>
-          <text class="line2"
-            >{{ userInfo.birth_year }}年 · {{ userInfo.height }}cm ·
-            {{ userInfo.area }}</text
-          >
+          <text class="line2">{{ userInfo.birth_year }}年 · {{ userInfo.height }}cm ·{{ userInfo.area }}</text>
         </view>
         <text v-else-if="token == null" class="userInfo-warn">账号未登录</text>
-        <text v-else-if="isImprove == -1" class="userInfo-warn"
-          >未完善资料</text
-        >
-        <text v-else-if="isImprove == -2" class="userInfo-warn"
-          >资料正在审核</text
-        >
+        <text v-else-if="isImprove == -1" class="userInfo-warn">请完善资料</text>
       </view>
+	  
       <view class="numsInfo">
-        <view
-          class="numsInfo-item"
-          @click="openPage('/pages/my_following/my_following')"
-        >
-          <text class="txt1">{{
-            userInfo == null ? 0 : userInfo.follow_num
-          }}</text>
+        <view class="numsInfo-item" @click="openPage('/pages/my_following/my_following')">
+          <text class="txt1">{{userInfo == null ? 0 : userInfo.follow_num}}</text>
           <text class="txt2">我的关注</text>
         </view>
-        <view
-          @click="openPage('/pages/follow_me/follow_me')"
-          class="numsInfo-item"
-        >
-          <text class="txt1">{{
-            userInfo == null ? 0 : userInfo.fans_num
-          }}</text>
+        <view class="numsInfo-item" @click="openPage('/pages/follow_me/follow_me')">
+          <text class="txt1">{{userInfo == null ? 0 : userInfo.fans_num}}</text>
           <text class="txt2">我的粉丝</text>
-          <text
-            v-if="userInfo != null && userInfo.new_fans_num > 0"
-            class="notice"
-            >+{{ userInfo.new_fans_num }}</text
-          >
+          <text v-if="userInfo != null && userInfo.new_fans_num > 0" class="notice">
+				+{{ userInfo.new_fans_num }}</text>
         </view>
         <view @click="openPage('/pages/news/news')" class="numsInfo-item">
-          <text class="txt1">{{
-            userInfo == null ? 0 : userInfo.new_message_num
-          }}</text>
+          <text class="txt1">{{userInfo == null ? 0 : userInfo.new_message_num}}</text>
           <text class="txt2">新消息</text>
-          <text
-            v-if="userInfo != null && userInfo.new_message_num > 0"
-            class="notice"
-            >+{{ userInfo.new_message_num }}</text
-          >
+          <text v-if="userInfo != null && userInfo.new_message_num > 0" class="notice">
+				+{{ userInfo.new_message_num }}</text>
         </view>
       </view>
+	  
       <view class="vipInfo">
-        <image
-          class="vipInfo-back"
-          :src="
-            app.config.globalProperties.$imgBase +
-            '/xlyl_meet/mine_center/vip_info.png'
-          "
-        ></image>
+        <image class="vipInfo-back" :src="app.config.globalProperties.$imgBase + '/xlyl_meet/mine_center/vip_info.png'"></image>
         <view class="vipInfo-base">
-          <view
-            :style="{
-              flex: 1,
-              flexShrink: 0,
-              minWidth: 0,
-              display: 'flex',
-              flexDirection: 'column',
-            }"
-          >
+          <view :style="{flex: 1, flexShrink: 0, minWidth: 0, display: 'flex', flexDirection: 'column',}">
             <text class="txt1">VIP会员</text>
-            <text v-if="userInfo?.is_member != 1" class="txt2"
-              >开通VIP会员，尊享多种会员权益</text
-            >
-            <text v-else class="txt2"
-              >会员到期：{{ userInfo.member_expire_text }}</text
-            >
+            <text v-if="userInfo?.is_member != 1" class="txt2">开通VIP会员，尊享多种会员权益</text>
+            <text v-else class="txt2">会员到期：{{ userInfo.member_expire_text }}</text>
           </view>
-          <text
-            @click="openPage('/pages/member_purchase/member_purchase')"
-            class="buy_btn"
-            >立即购买</text
-          >
+          <text @click="openPage('/pages/member_purchase/member_purchase')" class="buy_btn">立即购买</text>
         </view>
       </view>
+	  
       <scroll-view class="options" scroll-y>
         <view v-if="shopInfo?.has_shop" class="options-store">
           <view class="head">
@@ -143,139 +60,65 @@
             <text class="head-time">{{ shopInfo.create_date }}入驻</text>
           </view>
           <view class="manage">
-            <view
-              @click="openPage('/pages/store_information/store_information')"
-              class="manage-item"
-            >
-              <image
-                class="icon"
-                :src="`/static/mine_center/information${
-                  shopInfo.user_role == 1 ? '_p' : ''
-                }.png`"
-              ></image>
-              <text class="txt1" :class="{ txt2: shopInfo.user_role == 1 }"
-                >信息管理</text
-              >
-              <image
-                v-if="shopInfo.shop_info_status == 1"
-                class="audit_flag"
-                src="/static/mine_center/audit_flag.png"
-              ></image>
+            <view @click="openPage('/pages/store_information/store_information')" class="manage-item">
+              <image class="icon" :src="`/static/mine_center/information${shopInfo.user_role == 1 ? '_p' : ''}.png`"></image>
+              <text class="txt1" :class="{ txt2: shopInfo.user_role == 1 }">信息管理</text>
+              <image v-if="shopInfo.shop_info_status == 1"
+					class="audit_flag" src="/static/mine_center/audit_flag.png"></image>
             </view>
-            <view
-              @click="openPage('/pages/order_manage/order_manage')"
-              class="manage-item"
-            >
+            <view @click="openPage('/pages/order_manage/order_manage')" class="manage-item">
               <image class="icon" src="/static/mine_center/order.png"></image>
               <text class="txt1 txt2">订单管理</text>
             </view>
-            <view
-              @click="openPage('/pages/store_revenue/store_revenue')"
-              class="manage-item"
-            >
-              <image
-                class="icon"
-                :src="`/static/mine_center/income${
-                  shopInfo.user_role == 1 ? '_p' : ''
-                }.png`"
-              ></image>
-              <text class="txt1" :class="{ txt2: shopInfo.user_role == 1 }"
-                >门店收入</text
-              >
+            <view @click="openPage('/pages/store_revenue/store_revenue')" class="manage-item">
+              <image class="icon" :src="`/static/mine_center/income${shopInfo.user_role == 1 ? '_p' : ''}.png`"></image>
+              <text class="txt1" :class="{ txt2: shopInfo.user_role == 1 }">门店收入</text>
             </view>
-            <view
-              @click="
-                openPage('/pages/employee_management/employee_management')
-              "
-              class="manage-item"
-            >
-              <image
-                class="icon"
-                :src="`/static/mine_center/staff${
-                  shopInfo.user_role == 1 ? '_p' : ''
-                }.png`"
-              ></image>
-              <text class="txt1" :class="{ txt2: shopInfo.user_role == 1 }"
-                >员工管理</text
-              >
+            <view @click="openPage('/pages/employee_management/employee_management')" class="manage-item">
+              <image class="icon" :src="`/static/mine_center/staff${shopInfo.user_role == 1 ? '_p' : ''}.png`"></image>
+              <text class="txt1" :class="{ txt2: shopInfo.user_role == 1 }">员工管理</text>
             </view>
           </view>
         </view>
+		
         <view class="options-top">
-          <view
-            v-for="(item, ind) in optionsTop"
-            :key="'topOptions' + ind"
-            class="item"
-            @click="openPage(item.pagePath)"
-            :style="{
-              borderBottom:
-                ind < optionsTop.length - 1 ? '1px solid #F0F2F5' : 'none',
-            }"
-          >
+          <view v-for="(item, ind) in optionsTop" :key="'topOptions' + ind" class="item" 
+			@click="openPage(item.pagePath)"
+            :style="{borderBottom:ind < optionsTop.length - 1 ? '1px solid #F0F2F5' : 'none',}">
             <view class="item-left">
               <image :src="item.iconPath" class="icon"></image>
               <text class="title">{{ item.title }}</text>
             </view>
             <view class="item-right">
-              <text v-if="ind == 0" class="info">
-                {{
-                  userInfo == null
-                    ? ""
-                    : "已完成" + (userInfo.complete_ratio + "%")
-                }}</text
-              >
-              <image
-                src="/static/mine_center/arrow_left.png"
-                class="arrow_right"
-              ></image>
+              <text v-if="ind == 0" class="info">   <!--完善信息-->
+				{{userInfo == null? "": "已完成" + (userInfo.complete_ratio + "%")}}</text>
+              <image src="/static/mine_center/arrow_left.png" class="arrow_right"></image>
             </view>
           </view>
         </view>
 
         <view class="options-top" :style="{ marginTop: '24rpx' }">
-          <template
-            v-for="(item, ind) in optionsBottom"
-            :key="'bottomOptions' + ind"
-          >
-            <button
-              v-if="item.pagePath == 'service'"
-              class="item"
-              open-type="contact"
-              @contact="contractService"
-              :style="{
-                borderBottom:
-                  ind < optionsBottom.length - 1 ? '1px solid #F0F2F5' : 'none',
-              }"
-            >
+          <template v-for="(item, ind) in optionsBottom" :key="'bottomOptions' + ind">
+			  <!--联系客服-->
+            <button v-if="item.pagePath == 'service'" 
+				class="item" open-type="contact" @contact="contractService"
+              :style="{borderBottom:ind < optionsBottom.length - 1 ? '1px solid #F0F2F5' : 'none',}">
               <view class="item-left">
                 <image :src="item.iconPath" class="icon"></image>
                 <text class="title">{{ item.title }}</text>
               </view>
               <view class="item-right">
-                <image
-                  src="/static/mine_center/arrow_left.png"
-                  class="arrow_right"
-                ></image>
+                <image src="/static/mine_center/arrow_left.png" class="arrow_right"></image>
               </view>
             </button>
-            <view
-              v-else
-              class="item"
-              @click="openPage(item.pagePath)"
-              :style="{
-                borderBottom:
-                  ind < optionsBottom.length - 1 ? '1px solid #F0F2F5' : 'none',
-              }"
-            >
+            <view v-else class="item" @click="openPage(item.pagePath)"
+              :style="{borderBottom:ind < optionsBottom.length - 1 ? '1px solid #F0F2F5' : 'none',}">
               <view class="item-left">
                 <image :src="item.iconPath" class="icon"></image>
                 <text class="title">{{ item.title }}</text>
               </view>
               <view class="item-right">
-                <image
-                  src="/static/mine_center/arrow_left.png"
-                  class="arrow_right"
-                ></image>
+                <image src="/static/mine_center/arrow_left.png" class="arrow_right"></image>
               </view>
             </view>
           </template>
@@ -283,18 +126,15 @@
         <view :style="{ width: '100%', height: '96px' }"></view>
       </scroll-view>
     </view>
-    <uni-popup
-      @change="loginClose"
-      :style="{ zIndex: '99999' }"
-      ref="loginPopup"
-      type="bottom"
-    >
+	
+    <uni-popup @change="loginClose"
+      :style="{ zIndex: '99999' }" ref="loginPopup" type="bottom">
       <uni-login></uni-login>
     </uni-popup>
+	
     <uni-popup :style="{ zIndex: '99999' }" type="center" ref="completePopup">
-      <meet-popup
-        @confirm="toComplete"
-        msg="你还没有完善资料，无法使用更多功能"
+      <meet-popup @confirm="toComplete"
+        msg="亲，请先完善个人信息🔒才能解锁更多功能哦~"
         confirmText="立即完善"
         cancelText="取消"
       ></meet-popup>

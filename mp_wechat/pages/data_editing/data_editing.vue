@@ -22,10 +22,6 @@
                       ? userInfo.last_checked_nickname
                       : userInfo.nickname
                   }}</text>
-                  <view v-if="userInfo.is_check_nickname == 1" class="audit">
-                    <image class="img" src="/static/data_editing/nickname_audit.png"></image>
-                    <text class="txt">待审核</text>
-                  </view>
                   <image v-if="userInfo.gender == 1" src="/static/sex_man.png" class="sex"></image>
                   <image v-if="userInfo.gender == 2" src="/static/sex_woman.png" class="sex"></image>
                   <image v-if="userInfo.is_member == 1" src="/static/vip_icon.png" class="vip_tag"
@@ -35,8 +31,7 @@
                   <image v-if="userInfo.is_cert_education == 1" class="vip_tag" :style="{ marginLeft: '12rpx' }"
                     src="/static/person/edu.png"></image>
                 </view>
-                <text class="desc_info">{{ userInfo.birth_year }}年 · {{ userInfo.height }}cm ·
-                  {{ userInfo.area }}</text>
+                <text class="desc_info">{{ userInfo.birth_year }}年 · {{ userInfo.height }}cm /{{ userInfo.weight }}kg</text>
               </view>
               <view @click="toBasic" class="userInfo-focus">
                 <text class="txt">编辑</text>
@@ -53,27 +48,20 @@
 
             </view>
             <view class="infos">
-              <view class="infos-item">
-                <image class="icon" src="/static/personal_details/educational.png"></image>
-                <text class="txt">{{ userInfo.school }} ·
-                  {{ userInfo.education_type_text }}</text>
-              </view>
+ 
               <view class="infos-item">
                 <image class="icon" src="/static/personal_details/now_location.png"></image>
-                <text class="txt">现居{{ userInfo.area }}</text>
+                <text class="txt">{{ userInfo.area }}</text>
               </view>
               <view class="infos-item">
                 <image class="icon" src="/static/personal_details/constellation.png"></image>
                 <text class="txt">{{ userInfo.constellation_text }}</text>
               </view>
-              <view class="infos-item">
-                <image class="icon" src="/static/personal_details/weight.png"></image>
-                <text class="txt">{{ userInfo.weight }}kg</text>
-              </view>
-              <view class="infos-item">
-                <image class="icon" src="/static/personal_details/home_location.png"></image>
-                <text class="txt">{{ userInfo.hometown }}</text>
-              </view>
+			  <view class="infos-item">
+			    <image class="icon" src="/static/personal_details/educational.png"></image>
+			    <text class="txt">{{ userInfo.school }}{{ userInfo.education_type_text }}</text>
+			  </view>
+   
               <view class="infos-item">
                 <image class="icon" src="/static/personal_details/advertisement.png"></image>
                 <text class="txt">{{ userInfo.work_type_text }}</text>
@@ -82,45 +70,32 @@
                 <image class="icon" src="/static/personal_details/income.png"></image>
                 <text class="txt">年收入{{ userInfo.salary }}</text>
               </view>
+			  <view class="infos-item">
+			    <image class="icon" src="/static/personal_details/home_location.png"></image>
+			    <text class="txt">籍贯{{ userInfo.hometown }}</text>
+			  </view>
               <view class="infos-item" v-for="(item, index) in extraList" :key="'extra' + index">
                 <text class="txt">{{ item.formatter_value }}</text>
               </view>
             </view>
           </view>
+		  
           <view class="main-area" :style="{ marginTop: '24rpx' }">
-            <view :style="{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }">
-              <view :style="{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }">
+            <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',}">
+              <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}">
                 <image class="title_icon" src="/static/data_editing/album.png"></image>
                 <text class="title_txt">我的照片</text>
               </view>
               <view @click="savePhotos" class="userInfo-focus">
                 <text class="txt">保存</text>
               </view>
-            </view>
-            <drag-img showAudit keyName="path" v-model="avatarList" :cols="4"
-              :style="{ marginTop: '24rpx' }"></drag-img>
+            </view>			
+            <drag-img keyName="path" v-model="avatarList" :cols="4":style="{ marginTop: '24rpx' }"></drag-img>
           </view>
-          <view class="main-area" :style="{ marginTop: '24rpx' }">
-            <view :style="{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }">
-              <view :style="{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }">
+		  
+         <view class="main-area" :style="{ marginTop: '24rpx' }">
+            <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',}">
+              <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}">
                 <image class="title_icon" src="/static/personal_details/my_tag.png"></image>
                 <text class="title_txt">我的标签</text>
               </view>
@@ -137,15 +112,10 @@
                   </view>
                 </view>
               </view>
-              <!-- <view v-for="(item, index) in userInfo.label" :key="'tag' + index" class="tags-item">
-                <text class="txt">{{ item.name }}</text>
-              </view> -->
             </view>
           </view>
 
           <view class="main-area" :style="{ marginTop: '24rpx' }">
-       <!--     <image v-if="userInfo.is_check_intro == 1" src="/static/data_editing/about_edit.png"
-              class="audit_about_tag"></image>-->
             <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',}">
               <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}">
                 <image class="title_icon" src="/static/personal_details/about_me.png"></image>
@@ -155,22 +125,12 @@
                 <text class="txt">编辑</text>
               </view>
             </view>
-       <!-- <text class="content">{{userInfo.is_check_intro == 1 ? userInfo.last_checked_intro : userInfo.intro}}</text>-->
               <text class="content">{{userInfo.intro}}</text>
           </view>
- 
-          <view class="main-area" :style="{ marginTop: '24rpx' }">
-            <view :style="{
-              display: 'flex',
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-            }">
-              <view :style="{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-              }">
+
+        <view class="main-area" :style="{ marginTop: '24rpx' }">
+            <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',justifyContent: 'space-between',}">
+              <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}"> 
                 <image class="title_icon" src="/static/personal_details/family_back.png"></image>
                 <text class="title_txt">对Ta的要求/期望</text>
               </view>
@@ -180,44 +140,15 @@
             </view>
             <text class="content">{{ userInfo.myExpect}}</text>
           </view>
-
-          <!-- <view
-            class="main-area"
-            :style="{ marginTop: '24rpx', marginBottom: '64rpx' }"
-          >
-            <view
-              :style="{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'space-between',
-              }"
-            >
-              <view
-                :style="{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }"
-              >
-                <image
-                  class="title_icon"
-                  src="/static/personal_details/my_experience.png"
-                ></image>
-                <text class="title_txt">我的经历</text>
-              </view>
-              <view
-                @click="toEdit(4, userInfo.experience)"
-                class="userInfo-focus"
-              >
-                <text class="txt">编辑</text>
-              </view>
-            </view>
-            <text class="content">{{ userInfo.experience }}</text>
-          </view> -->
         </view>
+		
+       <view class="start_base">
+          <button @click="backtohome" class="start_base-btn"><text>返回首页</text></button>
+        </view>		
+		
       </scroll-view>
     </view>
+	
     <uni-popup ref="tagsPopup" type="bottom">
       <view class="tagsView">
         <view class="tagsView-head">
@@ -231,10 +162,9 @@
           maxHeight: '750rpx',
           overflow: 'auto',
         }">
-          <view v-for="(item, index) in labelList" :key="'label' + index" :style="{
-            borderBottom:
-              index == labelList.length - 1 ? 'none' : '1px solid #E8EAEF',
-          }" class="tagsView-item">
+          <view v-for="(item, index) in labelList" :key="'label' + index" 
+		  :style="{borderBottom: index == labelList.length - 1 ? 'none' : '1px solid #E8EAEF',}" 
+		  class="tagsView-item">
             <text class="title">{{ item.name }}</text>
             <view class="options">
               <view v-for="(citem, cind) in item.childlist" @click="selectTag(citem)" :key="'tag' + cind"
@@ -257,7 +187,7 @@ import * as qiniuUploader from "@/common/upload/qiniuUploader.ts";
 import { api } from "@/common/request/index.ts";
 import { getCurrentInstance, ref, computed } from "vue";
 import { useStore } from "vuex";
-import { onLoad } from "@dcloudio/uni-app";
+import { onShow } from "@dcloudio/uni-app";
 const selectedLabels = ref([]); // 选择的
 const labelList = ref([]);
 const app = getCurrentInstance().appContext.app;
@@ -271,6 +201,19 @@ const navBack = () => {
   uni.navigateBack();
 };
 
+const backtohome = () => {
+	// 对 selectedLabels 进行赋值
+	selectedLabels.value = Object.assign([], userInfo.value.label);
+	if (selectedLabels.value.length < 5) {
+		uni.showToast({
+		  icon: "none",
+		  title: "请至少选择5个标签",
+		});
+		return;
+	}
+	uni.switchTab({url: '/pages/index/index'})
+};	
+	
 const extraList = computed(() => {
   return userInfo.value.extra_info.filter(
     (item) => item.formatter_value != null && item.formatter_value.length > 0
@@ -278,14 +221,6 @@ const extraList = computed(() => {
 });
 
 const toEdit = (type: number, content) => {
-  if (type == 1 && userInfo.value.is_check_intro == 1) {
-    // userInfo.intro
-    uni.showToast({
-      icon: "none",
-      title: "关于我正在审核，暂时无法编辑",
-    });
-    return;
-  }
   uni.navigateTo({
     url: `/pages/edit_area/edit_area?type=${type}`,
     success: (res) => {
@@ -295,7 +230,9 @@ const toEdit = (type: number, content) => {
     },
   });
 };
+
 const tagsList = ref([]);
+
 const groupBy = (array, key) => {
   return array.reduce((result, currentItem) => {
     // 使用id作为key来分组
@@ -313,17 +250,14 @@ const groupBy = (array, key) => {
 };
 
 const tabgetList = async () => {
-  const res = await api
-    .post("user/info")
+  const res = await api.post("user/info")
   if (res.code == 1) {
     store.commit("setUserInfo", res.data);
     const obj = {};
     lableListNew.value.forEach((element) => {
       obj[element.id] = element.name;
     });
-
     const lable = res.data.label;
-
     const list = [];
     lable.map((i) => {
       lableListNew.value.map((j) => {
@@ -334,20 +268,18 @@ const tabgetList = async () => {
         }
       });
     });
-
     const groupById = groupBy(list, "pid").map((i) => {
       i.name = obj[i.id];
       return i;
     });
-    console.log(groupById);
+//  console.log(groupById);
     tagsList.value = groupById;
   }
-
 }
 
 const lableListNew = ref([])
 
-onLoad(() => {
+onShow(() => {
   avatarList.value = userInfo.value.albums_text.map((xitem: any) => {
     return {
       path: xitem,
@@ -381,24 +313,14 @@ onLoad(() => {
             childlist: chilList,
           };
         });
-
       tabgetList()
-
     }
   });
 });
-const savePhotos = async () => {
-  if (userInfo.value.is_check_avatar == 1) {
-    uni.showToast({
-      icon: "none",
-      title: "照片正在审核中",
-    });
-    return;
-  }
-  // user/edit_avatar
-  let notUploadImgs = avatarList.value.filter((item) => item.local);
-  // 未上传的头像
-  uni.showLoading({
+
+const savePhotos = async () => {  
+  let notUploadImgs = avatarList.value.filter((item) => item.local);  
+  uni.showLoading({  // 未上传的头像
     title: "loading...",
     mask: true,
   });
@@ -425,7 +347,7 @@ const savePhotos = async () => {
               ind++;
             }
           }
-          submitAvatars();
+          submitAvatars();	
         })
         .catch((e) => {
           uni.hideLoading();
@@ -435,6 +357,7 @@ const savePhotos = async () => {
     submitAvatars();
   }
 };
+
 const submitAvatars = () => {
   api
     .post("user/edit_avatar", {
@@ -445,7 +368,7 @@ const submitAvatars = () => {
       if (xres.code == 1) {
         uni.showToast({
           icon: "none",
-          title: xres.msg,
+          title:"user/edit_avatar提交成功",
         });
         store.commit("setAvatar", avatarList.value[0]);
       }
@@ -454,6 +377,7 @@ const submitAvatars = () => {
       uni.hideLoading();
     });
 };
+
 const uplaodFile = (path: string) => {
   return new Promise((resolve, reject) => {
     qiniuUploader.upload({
@@ -469,23 +393,21 @@ const uplaodFile = (path: string) => {
 };
 
 const saveLabels = async () => {
-  if (selectedLabels.value.length <= 0) {
+  if (selectedLabels.value.length < 5) {
     uni.showToast({
       icon: "none",
-      title: "请至少选择一个标签",
+      title: "请至少选择5个标签",
     });
     return;
   }
-  const res: any = await api.post("user/edit_label", {
-    label: selectedLabels.value.map((item) => item.id),
-  });
+  const res: any = await api.post("user/edit_label", {label: selectedLabels.value.map((item) => item.id),});
   tagsPopup.value.close();
   if (res.code == 1) {
     store.commit("setLabels", selectedLabels.value);
     tabgetList()
     uni.showToast({
       icon: "none",
-      title: res.msg,
+      title: "个人标签提交成功",
     });
   }
 };
@@ -864,28 +786,6 @@ const toBasic = () => {
       }
     }
 
-    // .tags {
-    //   display: flex;
-    //   flex-direction: row;
-    //   align-items: center;
-    //   flex-wrap: wrap;
-    //   margin-top: 24rpx;
-
-    //   &-item {
-    //     padding: 12rpx 24rpx;
-    //     background-color: #f4f5f7;
-    //     border-radius: 32rpx;
-    //     margin-right: 16rpx;
-    //     margin-bottom: 16rpx;
-
-    //     .txt {
-    //       font-size: 26rpx;
-    //       color: #1d2129;
-    //       display: block;
-    //     }
-    //   }
-    // }
-
     .tags {
       display: flex;
       flex-direction: row;
@@ -1074,5 +974,24 @@ const toBasic = () => {
       font-weight: 500;
     }
   }
+  
+  .start_base {
+     margin-top: 40rpx;
+	 height: 180rpx;
+     box-sizing: border-box;
+	 display: flex;
+	 justify-content: center; // 水平居中
+     &-btn {
+       width: 500rpx;
+       height: 80rpx;
+       background: linear-gradient(96deg, #4a97e7, #b57aff 100%);
+       border-radius: 44rpx;
+       line-height: 88rpx;
+       text-align: center;
+       font-size: 30rpx;
+       color: #fff;
+       font-weight: 500;
+     }
+   }
 }
 </style>

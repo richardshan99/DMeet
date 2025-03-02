@@ -181,7 +181,6 @@ class Invite Extends Model
             ->select();  
         }
         
-
         $areaList = model('app\common\model\AreaNew')->column('id,name');
         // var_dump($timezone);die;
         foreach($list as $key => $item)

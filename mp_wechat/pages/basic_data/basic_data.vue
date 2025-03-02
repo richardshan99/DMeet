@@ -1,23 +1,11 @@
 <template>
   <view class="main">
-    <image
-      class="main-top"
-      :src="
-        app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'
-      "
-    ></image>
+    <image class="main-top" :src="app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'"></image>
     <view class="main-base">
-      <uni-nav-bar
-        left-icon="left"
-        @clickLeft="navBack"
-        color="#1D2129"
-        :border="false"
-        background-color="transparent"
-        title="基本资料"
-        :statusBar="true"
-      ></uni-nav-bar>
+      <uni-nav-bar left-icon="left" @clickLeft="navBack" color="#1D2129" :border="false"
+        background-color="transparent" title="基本资料" :statusBar="true"></uni-nav-bar>
       <view class="scroll">
-        <view class="data">
+        <view class="data">          
           <view v-for="(item, index) in optionsTop"
             @click="openSelect(item)"
             class="data-item"
@@ -25,7 +13,7 @@
             :class="{ bd: index < optionsTop.length - 1 }">
             <text class="label">{{ item.label}}</text>
             <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}">
-              <input :disabled="item.disabled"
+              <input
                 v-if="item.type == 'input'"
                 type="text"
                 v-model="basicInfo[item.key]"
@@ -506,17 +494,18 @@ const optionsTop = reactive([
     type: "select",
     popInfo: null,
   },
-  {
-    label: "身高",
-    key: "height",
-    showKey: "height",
-    type: "select",
-    popInfo: null,
-  },
+ 
   {
     label: "所在地",
     key: "permanent_area",
     showKey: "permanent_area_name",
+    type: "select",
+    popInfo: null,
+  },
+  {
+    label: "身高",
+    key: "height",
+    showKey: "height",
     type: "select",
     popInfo: null,
   },
@@ -629,7 +618,7 @@ const getSenCode = async () => {
     });
     if (res.code != 1) {
       uni.showToast({
-        title: res.msg,
+        title: "发送失败",
         icon: "none",
       });
     } else {
@@ -674,23 +663,22 @@ onLoad(() => {
     active_Name.value = userInfo.value.active_point_text;
     active_point.value = userInfo.value.active_point;
     let homes = userInfo.value.howntown_last_id.split(",");
-    basicInfo.nickname =
-      userInfo.value.is_check_nickname == 1
-        ? userInfo.value.last_checked_nickname
-        : userInfo.value.nickname;
-    if (userInfo.value.is_check_nickname == 1) {
-      optionsTop[0].disabled = true;
-    }
+
+    basicInfo.nickname = userInfo.value.nickname;
     basicInfo.birth = userInfo.value.birth;
-    basicInfo.weight = userInfo.value.weight;
+
     basicInfo.height = userInfo.value.height;
+    basicInfo.weight = userInfo.value.weight;
+
     basicInfo.permanent_area = userInfo.value.area_id;
     basicInfo.permanent_area_name = userInfo.value.area;
-    basicInfo.weight = userInfo.value.weight;
+
     basicInfo.constellation = userInfo.value.constellation;
     basicInfo.constellation_name = userInfo.value.constellation_text;
+
     basicInfo.hometown = homes[homes.length - 1];
     basicInfo.hometown_name = userInfo.value.hometown;
+
     basicInfo.school = userInfo.value.school;
     basicInfo.education_type = userInfo.value.education_type;
     basicInfo.education_type_name = userInfo.value.education_type_text;
@@ -714,6 +702,7 @@ onLoad(() => {
   for (let x = 35; x <= 100; x++) {
     weightList.value.push(x);
   }
+  
   nextTick(() => {
     optionsTop[1].popInfo = birthPopup.value;
     optionsTop[2].popInfo = areaPopup.value;
@@ -884,7 +873,9 @@ const changePicker = async (key: string, event: any) => {
 
 // 打开选择弹窗
 const openSelect = (item: any) => {
-  console.log(item);
+  // 打印传入的参数 item
+  console.log('传入的参数 item:', item);
+
   if (item.key == "activeRegion") {
     uni.getLocation({
       type: "wgs84",
@@ -905,18 +896,6 @@ const openSelect = (item: any) => {
             active_Name.value = name;
           },
         });
-        // uni.request({
-        //   url: `https://apis.map.qq.com/ws/coord/v1/translate?locations=${latitude},${longitude}&type=1&key=VMTBZ-2FKKJ-Y3MFY-XKS2T-ZXIXJ-QVFP5`,
-        //   method: "GET",
-        //   success: (rsp) => {
-        //     console.log(rsp);
-
-        //     const lat = rsp.data.locations[0].lat;
-        //     const lng = rsp.data.locations[0].lng;
-        //     console.log(rsp.data, "精准的很");
-
-        //   },
-        // });
       },
     });
   } else if (item.type == "select") {
@@ -977,33 +956,24 @@ const saveNow = async () => {
       basicInfo.active_point_text = active_Name.value;
       basicInfo.active_point = active_point.value;
       basicInfo.contact_mobile = phone.value;
-      // basicInfo.contact_code = phone_code.value;
       if (updataPhone.value) {
         basicInfo.email_code = email_code.value;
       }
       basicInfo.email = email.value;
 
-      console.log(basicInfo);
+      console.log("basicInfo:", basicInfo);
       const res: any = await api.post("user/edit", basicInfo);
       if (res.code == 1) {
         uni.showToast({
           icon: "none",
-          title: res.msg,
+          title: "basicInfo保存成功",
         });
         store.dispatch("refreshInfo");
-        setTimeout(() => {
-          uni.navigateBack();
-        }, 1000);
+ 
       }
+	  uni.navigateBack();
     })
-    .catch((err) => {
-      console.log(err);
-
-      uni.showToast({
-        icon: "none",
-        title: err[0].message,
-      });
-    });
+ 
 };
 
 const confirmVal = (key: string, tab = 0) => {

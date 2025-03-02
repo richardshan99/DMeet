@@ -1,10 +1,11 @@
 <template>
 	<view class="drag-img">
 		<template v-if="viewWidth">
-			<movable-area class="drag-img-area" :style="{ height: areaHeight }" @mouseenter="mouseenter"
-				@mouseleave="mouseleave">
-				<movable-view v-for="(item, index) in imageList" :key="item.id" class="drag-img-area-view" direction="all" :y="item.y"
-					:x="item.x" 
+			<movable-area class="drag-img-area" :style="{ height: areaHeight }" 
+			@mouseenter="mouseenter" @mouseleave="mouseleave">
+				<movable-view v-for="(item, index) in imageList" :key="item.id" 
+					class="drag-img-area-view" direction="all" 
+					:y="item.y"	:x="item.x" 
 					:damping="40" 
 					:disabled="item.disable" 
 					@change="onChange($event, item)"
@@ -12,29 +13,19 @@
 					@mousedown="touchstart(item)" 
 					@touchend="touchend(item)"
 					@mouseup="touchend(item)" 
-					:style="{
-					  width: viewWidth + 'px', 
-					  height: viewWidth + 'px', 
+					:style="{width: viewWidth + 'px', height: viewWidth + 'px', 
 					  'z-index': item.zIndex, 
-					  opacity: item.opacity 
-					}">
-					<view class="drag-img-area-view-image" 
-					:style="{
-						width: childWidth, 
-						height: childWidth, 
+					  opacity: item.opacity }">
+					<view class="drag-img-area-view-image" :style="{
+						width: childWidth, height: childWidth, 
 						borderRadius: borderRadius + 'rpx',
-						transform: 'scale(' + item.scale + ')' 
-					  }">
+						transform: 'scale(' + item.scale + ')' }">
 						<image class="drag-img-area-view-image-img" :src="item.src" mode="aspectFill"></image>
-						<view class="drag-img-area-view-image-del" @click="delImages(item, index)" @touchstart.stop="delImageMp(item, index)"
+						<view class="drag-img-area-view-image-del" @click="delImages(item, index)"
+							@touchstart.stop="delImageMp(item, index)"
 							@touchend.stop="nothing()" @mousedown.stop="nothing()" @mouseup.stop="nothing()">
-							<!-- <view class="del-view">
-								
-							</view> -->
-							<image class="del-img" src="./icon_del.png">
-							</image>
+							<image class="del-img" src="./icon_del.png"></image>
 						</view>
-						<image v-if="(index == imageList.length - 1) && (userInfo.is_check_avatar == 1) && showAudit" src="/static/data_editing/avatar_edit.png" class="audit_mask"></image>
 					</view>
 				</movable-view>
 				<view class="drag-img-area-view-add" v-if="imageList.length < number"
@@ -154,7 +145,7 @@
 				} else {
 					height = (Math.ceil(this.imageList.length / this.colsValue) * this.viewWidth).toFixed() + 'px'
 				}
-				console.log('areaHeight', height)
+//				console.log('areaHeight', height)
 				return height
 			},
 			childWidth() {
@@ -188,7 +179,7 @@
 			modelValue: {
 				handler(n) {
 					if (!this.first && this.changeStatus) {
-						console.log('watch', n)
+//						console.log('watch', n)
 						let flag = false
 						for (let i = 0; i < n.length; i++) {
 							if (flag) {
@@ -207,7 +198,11 @@
 			},
 		},
 		created() {
-			this.width = uni.getSystemInfoSync().windowWidth
+//			this.width = uni.getSystemInfoSync().windowWidth
+			uni.getSystemInfo({
+				success: (res) => { this.width = res.windowWidth; },
+				fail: (err) => { console.error('getSystemInfo获取系统信息失败:', err); }
+        	});
 		},
 		mounted() {
 			const query = uni.createSelectorQuery().in(this)
@@ -554,17 +549,6 @@
 							width: 36rpx;
 							height: 36rpx;
 						}
-						// &>.del-view {
-						// 	width: 36rpx;
-						// 	height: 36rpx;
-						// 	// background-color: rgba(0, 0, 0, 0.4);
-						// 	border-radius: 0 0 0 10rpx;
-						// 	display: flex;
-						// 	justify-content: center;
-						// 	align-items: center;
-
-							
-						// }
 					}
 				}
 			}

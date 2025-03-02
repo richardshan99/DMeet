@@ -49,15 +49,14 @@ class BaseApi extends Api
             throw new BaseException(['code' => -98, 'msg' => '用户被冻结']);
         }
 
-        //2024-7-16 指定路由进行完善状态控制
-        //获取当前路由
+         //获取当前路由
         $controller = request()->controller();
         $action = request()->action(true);
 
         $route =  $controller. '/'. $action;
-        if($user->is_improve != Dict::USER_IMPROVE_TRUE && in_array($route, $this->userImproveRoute())) {
+ /*       if($user->is_improve != Dict::USER_IMPROVE_TRUE && in_array($route, $this->userImproveRoute())) {
             throw new BaseException(['code' => -1, 'msg' => '请先完善个人信息']);
-        }
+        }*/
         return $user;
     }
 

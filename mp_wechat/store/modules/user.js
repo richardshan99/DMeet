@@ -21,6 +21,7 @@ export default {
     setIsCertRealName(state, data) {
       state.userInfo.is_cert_realname = data;
     },
+    
     setLabels(state, labels) {
       state.userInfo.label = labels;
     },
@@ -36,7 +37,7 @@ export default {
   
     setAbout(state, about) {
       state.userInfo.last_checked_intro = about;
-      state.userInfo.is_check_intro = 1;
+ //   state.userInfo.is_check_intro = 1;
     },
     setAvatar(state, avatar) {
       state.userInfo.last_checked_avatar = avatar;

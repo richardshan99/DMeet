@@ -392,7 +392,7 @@ const saveSearchInfo = () => {
   store.commit("saveSearch", searchData);
   uni.showToast({
     icon: "none",
-    title: "已保存",
+    title: "saveSearch已保存",
   });
   uni.$emit("refreshRecommendations");
   uni.navigateBack();

@@ -311,15 +311,18 @@ const getRecommendations = async (refresh: boolean) => {
               };
             }
           });
-          nextTick(() => {
-            fljwzSwiperRef.value
-              .getDataIndexFun(activeI.value)
-              .then((index) => {
-                // 获取列表数据
-                let listData = dataList.slice(index, index + 5);
-                fljwzSwiperRef.value.linkFun(activeI.value, listData);
-              });
-          });
+		nextTick(() => {			
+			if (fljwzSwiperRef.value) {	// 检查 fljwzSwiperRef.value 是否为 null 或 undefined
+				fljwzSwiperRef.value
+				   .getDataIndexFun(activeI.value)
+				   .then((index) => {							
+						let listData = dataList.slice(index, index + 5); // 获取列表数据						
+						if (fljwzSwiperRef.value) { 
+							fljwzSwiperRef.value.linkFun(activeI.value, listData);
+						}
+					});
+			}
+		}); 			
         } else {
           dataList = dataList.concat(res.data);
         }

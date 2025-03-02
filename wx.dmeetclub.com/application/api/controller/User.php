@@ -90,14 +90,13 @@ class User extends BaseApi
     public function improve(Request $request)
     {
         $user = $this->getUser();
-        if($user->is_improve == Dict::USER_IMPROVE_AUDIT) {
+ /*       if($user->is_improve == Dict::USER_IMPROVE_AUDIT) {
             $this->renderError("信息审核中，无需重复提交");
         }
-
         if($user->is_improve == Dict::USER_IMPROVE_TRUE) {
             $this->renderError("信息已完善，无需重复提交");
-        }
-
+        }*/
+        
         $data = $request->post(null,'','trim,strip_tags');
         $rule = [];
         $message = [];
@@ -110,14 +109,11 @@ class User extends BaseApi
             $this->renderError(__('邮箱验证码不正确'));
         }
 
-        //昵称唯一
-//        $nicknameRequire = model('app\common\model\UserForm')->where('key', 'nickname')->value('is_require');
         $rule["nickname"] = 'require|unique:user,nickname,'.$user->id;
         $message['nickname.unique'] = '昵称已存在，请更换 ';
         $validate = new \think\Validate($rule, $message);
         $result  = $validate->check($data);
         if(false === $result) {
-            // 验证失败 输出错误信息
             $this->renderError($validate->getError());
         }
 
@@ -148,13 +144,13 @@ class User extends BaseApi
             }
         }
 
-        try {
-            //2024-7-16 初始提交用户增加审核环节
+        try {  //初始提交用户增加审核环节, 要审核的信息存入user_change数据表
             (new UserChange)->generate($user, $data);
-            unset($data['avatar']);
-            unset($data['nickname']);
+ //           unset($data['avatar']);
+ //           unset($data['nickname']);
             $active_point = isset($data['active_point']) ? $data['active_point'] : null; // 增加活跃区域
             unset($data['active_point']);
+
             $ret = $user->allowField(true)->save(array_merge($data, [
                 'is_improve' => Dict::USER_IMPROVE_AUDIT,
                 'age' => $age
@@ -173,13 +169,13 @@ class User extends BaseApi
 
         //新用户注册向管理员发邮件，by Richard 
         $subject = "有新用户注册";
-        $body = "有新用户注册，快去查看，<br>请登录DMeet直面 微信小程序查看。".Dict::EMAIL_TEXT;
+        $body = "有新用户 ".$data['nickname']." 注册，快去查看，<br>请登录DMeet直面 微信小程序查看。".Dict::EMAIL_TEXT;
         (new \app\common\library\NewEmail)->send('richard@dmeetclub.com', $subject, $body);  
 
         if($ret !== false) {
             $this->renderSuccess([], "提交成功");
         }
- 
+        $this->renderError("提交失败");
     }
 
     /**
@@ -197,10 +193,6 @@ class User extends BaseApi
 
         /** @var \app\common\model\User $user */
         $user = $this->getUser();
-        if($user->is_check_avatar == Dict::IS_TRUE) {
-            $this->renderError("信息审核中");
-        }
-
         try {
             $ret = $user->edit(['avatar' => $avatar]);
         }  catch (\Exception $e) {
@@ -290,10 +282,7 @@ class User extends BaseApi
 
         /** @var \app\common\model\User $user */
         $user = $this->getUser();
-        if($user->is_check_intro == Dict::IS_TRUE) {
-            $this->renderError("信息审核中");
-        }
-
+ 
         try {
             $ret = $user->edit(['intro' => $intro]);
         }  catch (\Exception $e) {

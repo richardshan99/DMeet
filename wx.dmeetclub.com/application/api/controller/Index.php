@@ -130,94 +130,102 @@ class Index extends BaseApi
         try {
             /** @var \app\common\model\User $user */
             $user = $this->getUser();
-            //未完善用户，仅推荐1名用户
+        /* 根据用户信息完善情况确定推荐用户的数量
+         * 若用户信息未完善（is_improve 为 Dict::IS_FALSE），则仅推荐 1 名用户
+         * 若用户信息已完善，则推荐 20 名用户
+         */
             $limit = $user->is_improve == Dict::IS_FALSE ? 1 : 20;
         }catch (\Exception $ex) {
-            $user = null;
-            //未登录展示一个用户
-            $limit = 1;
+            $user = null;            
+            $limit = 1; //未登录展示一个用户
         }
-        // 用户当前定位
+        /* 获取用户当前的定位信息
+         * 从请求的 POST 参数中获取 'position' 字段的值，若未提供则默认为空字符串 
+         */
         $position = $request->post('position', '');
+        /* 查询推荐用户列表
+         * 调用 \app\common\model\User 模型的 list 方法进行查询
+         * @param callable $callback 闭包函数，用于构建查询条件
+         * @param int $limit 推荐用户的数量
+         * @param string $order 排序规则，按照距离升序排列
+         * @param string $position 用户当前的定位信息
+         * @var \think\Collection $list 推荐用户列表
+         */
         $list = (new \app\common\model\User)->list(function($query) use($user, $request) {
-            if(!empty($user)) { //登录用户
-                //筛选 - 地区
-                $searchArea = $request->post('area_id', 0, 'intval,trim');
-                if(empty($searchArea)) {
-                    //默认同城
-                    $searchArea = $user->area_id ?: -1;
-                    //后台是否设置默认地址
-                    $defaultPosition = Config::get('site.default_position');
-                    if ($defaultPosition) {
-                        $defaultPosition = explode('-', $defaultPosition);
-                        $defaultPositionId = array_pop($defaultPosition);
-                        $defaultAreaId = model('app\common\model\AreaNew')->where(['name' => trim($defaultPositionId)])->value('id');
-                        $searchArea = $defaultAreaId ?: $searchArea;
-                    }
+        if(!empty($user)) { // 若用户已登录
+            $searchArea = $request->post('area_id', null, 'intval,trim');  // 获取用户筛选的地区 ID
+        /*    if(empty($searchArea)) {  // 若用户未指定筛选地区
+                // 默认使用用户所在地区的 ID，若用户所在地区 ID 为空则设为 -1
+                $searchArea = $user->area_id ?: -1;
+                // 获取后台设置的默认地址
+                $defaultPosition = Config::get('site.default_position');
+                if ($defaultPosition) {
+                    $defaultPosition = explode('-', $defaultPosition);
+                    $defaultPositionId = array_pop($defaultPosition);
+                    $defaultAreaId = model('app\common\model\AreaNew')->where(['name' => trim($defaultPositionId)])->value('id');
+                    $searchArea = $defaultAreaId ?: $searchArea;
                 }
+            }
+            $query->where("find_in_set({$searchArea}, `area_path`)");*/
+
+            if ($searchArea!== null && $searchArea > 0) {   //初始化推荐列表不按地区筛选，直接显示所有结果
                 $query->where("find_in_set({$searchArea}, `area_path`)");
-
-                //筛选 - 性别
-                $searchGender = $request->post('gender', 0, 'intval,trim');
-                if(empty($searchGender)) {
-                    //默认展示异性
- //                  $searchGender = $user->gender == Dict::GENDER_MALE
- //                      ? Dict::GENDER_FEMALE : Dict::GENDER_MALE;
-                     $searchGender = -1;     //默认展示全部                
-                     }
-                // -1不限制男女
-                if($searchGender != -1) {
-                    $query->where('gender', $searchGender);
-                }
-
-                //筛选 - 年龄范围
-                $searchAge = $request->post('age', null, 'trim');
-                if(!empty($searchAge)) {
-                    $searchAge = explode('-', $searchAge);
-                    $beginSearchAge = $searchAge[0] ?: 0;
-                    $endSearchAge   = $searchAge[1] ?: 230;
-                    $query->whereBetween('age', [$beginSearchAge, $endSearchAge]);
-                }
-
-                //筛选 - 身高=范围
-                $searchHeight = $request->post('height', null, 'trim');
-                if(!empty($searchHeight)) {
-                    $searchHeight = explode('-', $searchHeight);
-                    $beginSearchHeight = $searchHeight[0] ?: 0;
-                    $endSearchHeight   = $searchHeight[1] ?: 230;//算你比Yao高
-                    $query->whereBetween('height', [$beginSearchHeight, $endSearchHeight]);
-                }
-
-                //筛选 - 标签
-                $searchLabels = $request->post('labels/a', null, 'trim');
-                if(!empty($searchLabels)) {
-                    $str = [];
-                    foreach($searchLabels as $key => $litem) {
-                        $str[] = "JSON_SEARCH(`label`, 'one', ".$litem. ") is not NULL";
-                    }
-                    !$str || $query->whereRaw(implode(' or ', $str));
-                }
             }
-        }, $limit, 'distance asc',$position);
-
-        //找出所有二级标签
-        $labels = model('app\common\model\UserLabel')->where('is_delete', Dict::IS_FALSE)->column('name', 'id');
-        foreach($list as $key => $item)
-        {
-            $item->birth_year = date('y', strtotime($item->birth));
-            $item->distance = round($item->distance, 2);
-            $_labels = $item->label ?: [];
-
-            $userLabels = [];
-            foreach($_labels as $key => $_label)
-            {
-                $userLabels[] = $labels[$_label['id']] ?? "";
+            
+            $searchGender = $request->post('gender', 0, 'intval,trim');  //筛选 - 性别
+            if(empty($searchGender)) {                    
+         // $searchGender = $user->gender == Dict::GENDER_MALE ? Dict::GENDER_FEMALE : Dict::GENDER_MALE; //默认展示异性
+            $searchGender = -1;     //默认展示全部 ，-1不限制男女            
             }
-            $item->label_text = array_values(array_unique(array_filter($userLabels)));
-            $item->visible(['id','nickname','gender','height', 'area','is_member', 'school', 'label_text','distance']);
-            $item->append(['birth_year', 'avatar_text', 'is_cert_realname', 'is_cert_education', 'work_type_text', 'education_type_text']);
+            if($searchGender != -1) { // 若指定了筛选性别（不为 -1）
+                $query->where('gender', $searchGender);
+            }
+            
+            $searchAge = $request->post('age', null, 'trim');   //筛选 - 年龄范围
+            if(!empty($searchAge)) {
+                $searchAge = explode('-', $searchAge);
+                $beginSearchAge = $searchAge[0] ?: 16;   // 取数组的第一个元素作为起始年龄，若为空则默认为16岁
+                $endSearchAge   = $searchAge[1] ?: 80;  // 取数组的第二个元素作为结束年龄，若为空则默认为80岁
+                $query->whereBetween('age', [$beginSearchAge, $endSearchAge]);
+            }
+            
+            $searchHeight = $request->post('height', null, 'trim');   // 筛选 - 身高范围
+            if(!empty($searchHeight)) {
+                $searchHeight = explode('-', $searchHeight);
+                $beginSearchHeight = $searchHeight[0] ?: 140;   // 取数组的第一个元素作为起始身高，若为空则默认为140cm
+                $endSearchHeight   = $searchHeight[1] ?: 200;
+                $query->whereBetween('height', [$beginSearchHeight, $endSearchHeight]);
+            }
+            
+            $searchLabels = $request->post('labels/a', null, 'trim');   //筛选 - 标签
+            if(!empty($searchLabels)) {     // 若用户指定了标签列表
+                $str = [];
+                foreach($searchLabels as $key => $litem) {  // 遍历标签列表
+                    $str[] = "JSON_SEARCH(`label`, 'one', ".$litem. ") is not NULL";    // 查询 label 字段中包含当前标签的记录
+                }
+                !$str || $query->whereRaw(implode(' or ', $str));   // 若查询条件数组不为空，则添加标签筛选条件
+            }
         }
-        $this->renderSuccess($list);
+    }, $limit, 'distance asc',$position);   //按照距离从近到远排序
+
+    //找出所有二级标签
+    $labels = model('app\common\model\UserLabel')->where('is_delete', Dict::IS_FALSE)->column('name', 'id');
+    foreach($list as $key => $item) // 遍历推荐用户列表
+    {
+        $item->birth_year = date('y', strtotime($item->birth)); // 从用户的出生日期中提取出生年份的后两位
+        $item->distance = round($item->distance, 2);    // 将用户与当前位置的距离保留两位小数
+        $_labels = $item->label ?: [];  // 获取用户的标签列表，若为空则设为空数组
+
+        $userLabels = [];
+        foreach($_labels as $key => $_label)    // 遍历用户的标签列表
+        {
+            $userLabels[] = $labels[$_label['id']] ?? "";   // 根据标签 ID 从 $labels 数组中获取对应的标签名称，若不存在则为空字符串
+        }
+        $item->label_text = array_values(array_unique(array_filter($userLabels)));  // 去除重复和空的标签名称，重新索引数组
+        $item->visible(['id','nickname','gender','height', 'area','is_member', 'school', 'label_text','distance']); // 设置用户信息中需要显示的字段
+        $item->append(['birth_year', 'avatar_text', 'is_cert_realname', 'is_cert_education', 'work_type_text', 'education_type_text']);
+    }
+    $this->renderSuccess($list);
     }
 
     /**
@@ -240,7 +248,7 @@ class Index extends BaseApi
         if(isset($position) && false !== strpos($position, ',')) {
             list($lon, $lat) = explode(',', $position);
         }
-        // var_dump($lon, $lat);die;
+
         $item = \app\common\model\User::field("*, (st_distance_sphere(point(".$lon.",".$lat."), `active_point`)/1000) as distance, ST_AsText(`active_point`) as point_text")
             ->with('cert')
             ->where(['id' => $userId ?: $this->user->id, 'is_improve' => Dict::IS_TRUE])

@@ -192,14 +192,29 @@
 		},
 		mounted() {
 			const fixSize = () => {
-				const {
+	/*			const {
 					windowWidth,
 					windowHeight,
 					windowTop,
 					safeArea,
 					screenHeight,
 					safeAreaInsets
-				} = uni.getSystemInfoSync()
+				} = uni.getSystemInfoSync()*/
+				uni.getSystemInfo({
+					success: (res) => {
+						const {
+							windowWidth,
+							windowHeight,
+							windowTop,
+							safeArea,
+							screenHeight,
+							safeAreaInsets
+						} = res;
+					},
+					fail: (err) => {
+						console.error('获取系统信息失败:', err);
+					}
+				});
 				this.popupWidth = windowWidth
 				this.popupHeight = windowHeight + (windowTop || 0)
 				// TODO fix by mehaotian 是否适配底部安全区 ,目前微信ios 、和 app ios 计算有差异，需要框架修复

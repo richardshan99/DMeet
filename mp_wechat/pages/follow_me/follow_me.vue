@@ -53,7 +53,7 @@
 			if (res.code == 1) {
 				uni.showToast({
 					icon: 'none',
-					title: res.msg
+					title: "index/follow成功",
 				})
 				getFollowList(true)
 			}

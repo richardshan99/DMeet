@@ -369,7 +369,7 @@ const toggleFocus = (userId) => {
         props.userDetail.is_follow = 1;
         uni.showToast({
           icon: "none",
-          title: res.msg,
+          title: "有新关注",
         });
       }
     });

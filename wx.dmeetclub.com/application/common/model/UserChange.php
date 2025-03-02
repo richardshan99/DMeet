@@ -58,31 +58,26 @@ class UserChange Extends Model
     public function generate(User $user, $params = [])
     {
         if(!$params) return ;
-        //变更类型
-        if(isset($params['avatar']) && !empty($params['avatar'])) {//头像
-            $data['is_check_avatar'] = DIct::IS_TRUE;
-
-            //2024071 头像改为多图相册，第一张图片为头像
+         if(isset($params['avatar']) && !empty($params['avatar'])) {//头像
+            $data['is_check_avatar'] = DIct::IS_TRUE;  //头像改为多图相册，第一张图片为头像           
             $albums = $params['avatar'] ?: [];
             $params['avatar'] = array_shift($albums);
             $params['albums'] = $albums ?: [];
         }
 
-        if(isset($params['nickname']) && !empty($params['nickname'])) {//昵称
+        if(isset($params['nickname']) && !empty($params['nickname'])) { //昵称
             $data['is_check_nickname'] = Dict::IS_TRUE;
         }
 
-        if(isset($params['intro']) && !empty($params['intro'])) {//个人介绍
+        if(isset($params['intro']) && !empty($params['intro'])) {   //个人介绍
             $data['is_check_intro'] = Dict::IS_TRUE;
         }
 
         if(isset($data)) {
            $user->allowField(true)->save($data);
         }
-
-        return self::create(array_merge($params,[
-            "user_id" => $user->id
-        ]), true);
+        
+        return self::create(array_merge($params,["user_id" => $user->id]), true);        
     }
 
     /**

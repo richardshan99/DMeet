@@ -7,11 +7,12 @@
       <scroll-view :style="{ flex: 1, minHeight: 0, width: '90%' }" :scroll-y="true">
         <view :style="{display: 'flex', flexDirection: 'column', alignItems: 'center',}">
           <text class="page_title">完善基本资料</text>
-          <text class="intro">咱这儿先面基再哔哔！资料整顶配，才有小哥哥小姐姐主动敲你哦～</text>
+          <text class="intro">咱这儿先见面再聊天！资料越完整，才有小哥哥小姐姐主动邀你哦～</text>
           
           <view class="head">
-            <text class="title">我的照片（尽量传多张，第一张是你的头像）</text>
+            <text class="title">我的照片</text>
             <drag-img keyName="path" v-model="avatarList" :cols="4" :style="{ marginTop: '24rpx' }"></drag-img>
+			      <text class="meno">传照片首张当头像，多多益善，展现最有魅力的你~</text>
           </view>
 
           <view class="identity" :style="{ marginTop: '24rpx' }"> 
@@ -48,14 +49,29 @@
             </view>
           </view>
 
-          <view class="identity" :style="{ marginTop: '24rpx' }">
-            <view class="identity-item">
-              <text class="label">学校</text>
-              <input type="text" v-model="formData.school"
-                class="input" placeholder="请输入学校名称"/>
+           <view class="phone-code-box">
+            <view class="cell">
+              <view class="lable">邮箱</view>
+              <view class="value">
+                <input style="text-align: right;" type="text" 
+					v-model="email" class="input" placeholder="有消息和邀约会发通知~"/>
+              </view>
             </view>
 
-            <view class="identity-item" @click="openPopup(educationPopup)">
+            <view class="cell">
+              <view class="lable">验证码</view>
+              <view class="code">
+                <input style="text-align: right" type="text" v-model="email_code"
+                  class="input phone_code" placeholder="填写验证码"/>
+                <view class="segmentation"></view>
+                <view class="text" @click="getSenCode"> {{ phone_text }}</view>
+              </view>
+            </view>
+          </view>
+        </view>
+		
+         <view class="identity" :style="{ marginTop: '24rpx' }">
+             <view class="identity-item" @click="openPopup(educationPopup)">
               <text class="label">学历</text>
               <view :style="{display: 'flex', flexDirection: 'row', alignItems: 'center', 'justify-content': 'flex-end', flex: 1, height: '100%',}">
                 <text class="choose_val">{{formData.education_type_name}}</text>
@@ -71,7 +87,7 @@
               </view>
             </view>
 
-            <view class="identity-item" @click="openPopup(salaryPopup)":style="{ 'border-bottom': 'none' }">
+            <view class="identity-item" @click="openPopup(salaryPopup)">
               <text class="label">年收入</text>
               <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',
                   'justify-content': 'flex-end',flex: 1,height: '100%',}">
@@ -79,41 +95,28 @@
                 <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </view>
+			<view class="identity-item">
+			  <text class="label">学校</text>
+			  <input type="text" v-model="formData.school"
+			    class="input" placeholder="选填，填了没准校友来撩～"/>
+			</view>
           </view>
 
+   
           <view class="phone-code-box1">
             <view class="cell">
               <view class="lable">手机号</view>
               <view class="value">
-                <input style="text-align: right" type="number" v-model="phone"
+                <input style="text-align: right;height: 30rpx;" type="number" v-model="phone"
                   class="input" placeholder="请输入手机号"/>
               </view>
             </view>
+			<text class="m_contact">见面联系方式在这儿，双方都签到才可见，不怕个人隐私提前泄露哦～</text>
           </view>
-
-          <view class="phone-code-box">
-            <view class="cell">
-              <view class="lable">邮箱</view>
-              <view class="value">
-                <input style="text-align: right" type="text" v-model="email"
-                  class="input" placeholder="请输入邮箱"/>
-              </view>
-            </view>
-
-            <view class="cell">
-              <view class="lable">验证码</view>
-              <view class="code">
-                <input style="text-align: right" type="text" v-model="email_code"
-                  class="input phone_code" placeholder="填写验证码"/>
-                <view class="segmentation"></view>
-                <view class="text" @click="getSenCode"> {{ phone_text }}</view>
-              </view>
-            </view>
-          </view>
-        </view>
+	
 
         <view class="start_base">
-          <button @click="openJourney" class="start_base-btn"><text>保存</text></button>
+          <button @click="openJourney" class="start_base-btn"><text>保存/下一步</text></button>
         </view>
       </scroll-view>
     </view>
@@ -148,10 +151,11 @@
     </uni-popup>
 
     <uni-popup ref="areaPopup" type="bottom">
-      <city-select title="所在地" :nowOption="nowOptions.permanent_area" @confirm="confirmArea"></city-select>
+      <city-select title="居住地" :nowOption="nowOptions.permanent_area" @confirm="confirmArea"></city-select>
     </uni-popup>
+	
     <uni-popup ref="homeTownPopup" type="bottom">
-      <city-select :nowOption="nowOptions.hometown" @confirm="confirmHomeTown"></city-select>
+      <city-select title="籍贯" :nowOption="nowOptions.hometown" @confirm="confirmHomeTown"></city-select>
     </uni-popup>
 
     <uni-popup ref="staturePopup" type="bottom">
@@ -278,8 +282,8 @@ const formRules = reactive({
   nickname: { message: "昵称不能为空", required: true, type: "string" },
   gender: { message: "请选择性别", required: true },
   birth: { required: true, type: "string", message: "请选择生日" },
-   permanent_area: { required: true, message: "请选择所在地" },
-   height: { required: true, message: "请选择身高" },
+  permanent_area: { required: true, message: "请选择所在地" },
+  height: { required: true, message: "请选择身高" },
   weight: { required: true, message: "请选择体重" },
   constellation: { required: true, message: "请选择星座" },
   hometown: { required: true, message: "请选择籍贯" },
@@ -333,7 +337,7 @@ const phone_isGet = ref(true); // 是否可以获取验证码
 let phone_Interval = null;
 
 const active_point = ref(""); // 活跃区域
-const active_Name = ref(""); // 活跃区域 地名
+const active_Name = ref(""); // 活跃区域 地名或地址
 
 const formData = reactive({
   avatar: null,
@@ -365,7 +369,7 @@ onLoad(async () => {
     phone.value = userInfo.value.mobile;
   }
 
-  for (let year = 1700; year <= new Date().getFullYear(); year++) {
+  for (let year = 1960; year <= new Date().getFullYear(); year++) {
     years.push(year);
   }
   for (let month = 1; month <= 12; month++) {
@@ -374,10 +378,10 @@ onLoad(async () => {
   for (let x = 1; x <= new Date().getDate(); x++) {
     daysList.value.push(x);
   }
-  for (let a = 100; a <= 300; a++) {
+  for (let a = 140; a <= 200; a++) {
     heightList.push(a);
   }
-  for (let x = 40; x <= 200; x++) {
+  for (let x = 35; x <= 100; x++) {
     weightList.push(x);
   }
   nextTick(() => {
@@ -394,6 +398,10 @@ onLoad(async () => {
         popup: areaPopup.value,
         title: "所在地",
       }, 
+      {
+        key: "activeRegion",
+        title: "活跃区域",
+      },    	  
       {
         key: "height",
         show: "height",
@@ -418,21 +426,17 @@ onLoad(async () => {
         popup: homeTownPopup.value,
         title: "籍贯",
       },
-      {
-        key: "activeRegion",
-        title: "活跃区域",
-      },      
 
     ];
-    //
+    
     setTimeout(() => {
       nowOptions.nowBirth = [
-        years.length - 1,
+        years.length - 30, // 出生年份初始为当前年份-30
         new Date().getMonth(),
         new Date().getDate() - 1,
       ];
-      nowOptions.height = [60];
-      nowOptions.weight = [10];
+      nowOptions.height = [30]; // 身高初始为最低值+30
+      nowOptions.weight = [15]; // 体重初始为最低值+15
     }, 300);
   });
 
@@ -518,13 +522,13 @@ onLoad(async () => {
           const salaryInfo = vres.data.regular.find(
             (uitem) => uitem.key == "salary"
           );
-          if (schoolInfo.is_require == 1) {
+    /*      if (schoolInfo.is_require == 1) {
             formRules["school"] = {
               required: true,
               type: "string",
               message: "学校不得为空",
             };
-          }
+          }*/
           if (eduInfo.is_require == 1) {
             formRules["education_type"] = {
               required: true,
@@ -544,23 +548,30 @@ onLoad(async () => {
           if (formData.school == null || formData.school.length <= 0) {
             formData.school = schoolInfo.value;
           }
-          if (
-            formData.education_type == null ||
-            formData.education_type.length <= 0
-          ) {
+		  
+          if (formData.education_type == null ||formData.education_type.length <= 0) {
             formData.education_type = eduInfo.value;
             let eduSelected = educationalList.value.find(
-              (item) => item.value == formData.education_type
-            );
-            formData.education_type_name = eduSelected.name;
+              (item) => item.value == formData.education_type);
+			  // 检查 eduSelected 是否为 undefined
+			    if (eduSelected) {
+			        formData.education_type_name = eduSelected.name;
+			    } else {
+			        formData.education_type_name = ''; // 如果未找到匹配项，给 education_type_name 赋一个默认值
+			    }
           }
           if (formData.work_type == null || formData.work_type.length <= 0) {
             formData.work_type = workInfo.value;
             let workSelected = workTypeList.value.find(
-              (item) => item.value == formData.work_type
-            );
-            formData.education_type_name = workSelected.name;
-          }
+              (item) => item.value == formData.work_type);
+			   // 检查 workSelected 是否为 undefined
+			   if (workSelected) {
+					formData.work_type_name = workSelected.name;
+			   } else {
+				   formData.work_type_name = '';
+			   }
+			}
+		  
           if (formData.salary == null || formData.salary.length <= 0) {
             formData.salary = salaryInfo.value;
           }
@@ -641,28 +652,20 @@ const confirmArea = (options: Array<number>, address: string, cityId: any) => {
   nowOptions.permanent_area = options;
   formData.permanent_area_name = address;
   formData.permanent_area = cityId;
-  setTimeout(() => {
-    weightPopup.value.open();
-  }, 300);
 };
 
 // 选择家乡
 const confirmHomeTown = (
   options: Array<number>,
   address: string,
-  cityId: any
-) => {
+  cityId: any) => {
   nowOptions.hometown = options;
   formData.hometown_name = address;
   formData.hometown = cityId;
-  // setTimeout(() => {
-  // 	weightPopup.value.open()
-  // },300)
 };
 
 const openJourney = async () => {
-  // 获取七牛上传信息
-  // 开启见面之旅
+  // 保存当前信息，并进入下一页继续完善信息  
   if (avatarList.value.length <= 0) {
     uni.showToast({
       icon: "none",
@@ -701,7 +704,7 @@ const openJourney = async () => {
         let tasks = [];
         for (let img of avatarList.value) {
           if (img.local == true) {
-            tasks.push(uplaodFile(img.path));
+            tasks.push(uploadFile(img.path));
           }
         }
         Promise.all(tasks)
@@ -717,7 +720,7 @@ const openJourney = async () => {
               return vitem;
             });
             formData.avatar = arr.map((item) => item.path);
-            improveInfo();
+            improveInfo();  //保存当前页面的信息
           })
           .catch((e) => {
             uni.hideLoading();
@@ -728,7 +731,6 @@ const openJourney = async () => {
     })
     .catch((err) => {
       console.log(err);
-
       uni.showToast({
         icon: "none",
         title: err[0].message,
@@ -736,7 +738,7 @@ const openJourney = async () => {
     });
 };
 
-const uplaodFile = (path: string) => {
+const uploadFile = (path: string) => {
   return new Promise((resolve, reject) => {
     qiniuUploader.upload({
       filePath: path,
@@ -758,21 +760,22 @@ const improveInfo = async () => {
     formData.email = email.value;
     formData.email_code = email_code.value;
 
-    console.log(formData);
-    // return;
-    const res: any = await api.post("/user/improve", formData);
+    console.log("formData的值：",formData);
+    const res: any = await api.post("/user/improve", formData);	
     uni.hideLoading();
     uni.showToast({
       icon: "none",
       title: "已完善",
     });
+    console.log("res.code的值：",res.code)
     if (res.code == 1) {
-      uni.navigateBack();
+      uni.navigateTo({url: "/pages/data_editing/data_editing",});
     }
   } catch (e) {
     uni.hideLoading();
   }
-};
+};	
+
 
 const changePicker = async (key: string, event: any) => {
   let choice = event.detail.value;
@@ -847,7 +850,6 @@ const confirmVal = (key: string, tab = 0) => {
       formData.weight = weightList[nowOptions.weight[0]];
       break;
   }
-
   let itemInd = options1.value.findIndex((item) => item.key == key);
   options1.value[itemInd].popup.close();
   if (itemInd + 1 < options1.value.length) {
@@ -864,8 +866,6 @@ const closePopup = (e: any) => {
 };
 
 const openPopup = (e: any, type = null) => {
-  console.log(e);
-  console.log(type);
   if (type == "activeRegion") {
     uni.getLocation({
       type: "wgs84",
@@ -880,10 +880,14 @@ const openPopup = (e: any, type = null) => {
           longitude: longitude,
           success: (res) => {
             console.log(res);
-            const { latitude, longitude, address } = res;
+            const { latitude, longitude, name, address } = res;
             const list = [longitude, latitude];
             active_point.value = list.toString();
-            active_Name.value = address;
+            if (name!=""){
+              active_Name.value = name;
+            }else{
+              active_Name.value = address;
+			}     			
           },
         });
       },
@@ -935,10 +939,16 @@ const changeSex = (sex: number) => {
       text-align: center;
     }
     .intro {
-      margin-top: 8rpx;
-      font-size: 30rpx;
-      color: #333;
+      margin-top: 10rpx;
+	  margin-left: 10rpx;
+	  margin-right: 10rpx;
+      font-size: 28rpx;
+      color: #666;
     }
+	.m_contact {
+	  font-size: 25rpx;
+	  color: #666;
+	}
 
     .head {
       margin-top: 32rpx;
@@ -957,6 +967,11 @@ const changeSex = (sex: number) => {
         font-weight: 500;
         color: #1d2129;
       }
+	  .meno {
+		font-size: 25rpx;
+		margin-top: 10rpx;
+		color: #666;
+	  }
       .avatar_list {
         margin-top: 24rpx;
         display: flex;
@@ -1010,10 +1025,10 @@ const changeSex = (sex: number) => {
         align-items: center;
         .label {
           font-size: 28rpx;
-          color: #1d2129;
+          color: #222;
           &-intro {
             font-size: 24rpx;
-            color: #868d9c;
+            color: #666;
           }
         }
         .input {
@@ -1021,8 +1036,8 @@ const changeSex = (sex: number) => {
           flex-shrink: 0;
           margin-left: 10rpx;
           text-align: right;
-          font-size: 28rpx;
-          color: #4e5769;
+          font-size: 26rpx;
+          color: #666;
         }
         .option {
           width: 104rpx;
@@ -1054,7 +1069,7 @@ const changeSex = (sex: number) => {
       width: 686rpx;
       border-radius: 24rpx;
       background-color: #fff;
-      height: 114rpx;
+      height: 160rpx;
       padding: 0 32rpx;
       box-sizing: border-box;
       margin: 0 auto;
@@ -1092,7 +1107,6 @@ const changeSex = (sex: number) => {
           font-family: PingFang SC, PingFang SC-400;
           font-weight: 400;
           text-align: LEFT;
-
           .phone_code {
             color: #4e5769;
             padding-top: 6rpx;
@@ -1181,8 +1195,8 @@ const changeSex = (sex: number) => {
             font-weight: 400;
             color: #2c94ff;
           }
-        }
       }
+        }
       .cell:last-child {
         border-top: #e8eaef solid 1rpx;
       }
@@ -1262,8 +1276,8 @@ const changeSex = (sex: number) => {
 
   .start_base {
     margin-top: 64rpx;
-    width: 90%;
-    background-color: #fff;
+    width: 100%;
+    background-color: transparent;
     padding: 16rpx 32rpx 42px 32rpx;
     box-sizing: border-box;
     &-btn {

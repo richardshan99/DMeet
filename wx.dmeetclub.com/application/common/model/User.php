@@ -485,7 +485,6 @@ class User extends Model
      */
     public function edit($data = [])
     {
-
         Db::startTrans();
         try {
             if($this->is_check_avatar != Dict::IS_TRUE) {
@@ -493,37 +492,7 @@ class User extends Model
                     (new UserChange)->generate($this, ['avatar' => $data['avatar']]);
                 }
             }
-
-            if($this->is_check_nickname != Dict::IS_TRUE) {
-                if (isset($data['nickname']) && !empty($data['nickname'])) { //昵称
-                    if ($this->nickname != $data['nickname']) {
-                        //昵称唯一
-                        $isExists = model('app\common\model\User')->where([
-                            "nickname" => $data['nickname'],
-                            "id" => ['<>', $this->id]
-                        ])->find();
-
-                        if ($isExists) {
-                            throw new \Exception("昵称已存在，请更换");
-                        }
-                        //生成审核记录
-                        (new UserChange)->generate($this, ['nickname' => $data['nickname']]);
-                    }
-
-                }
-            }
-
-            if($this->is_check_intro != Dict::IS_TRUE) {
-                if (isset($data['intro']) && !empty($data['intro'])) { //个人简介
-                    (new UserChange)->generate($this, ['intro' => $data['intro']]);
-                }
-            }
-            
         
-            //验证联系电话
-            // if(!check_phone($data['contact_mobile'])){
-            //     throw new \Exception('手机号格式不正确');
-            // }
             if (isset($data['email']) && !empty($data['email'])) {
                 if(!Validate::is($data['email'], "email")){
                     throw new \Exception('邮箱格式不正确');
@@ -539,7 +508,7 @@ class User extends Model
             $active_point = isset($data['active_point']) ? $data['active_point'] : null; // 增加活跃区域
             unset($data['active_point']);
             $ret = $this->allowField([
-                "birth", "age", "weight", "area_path", "area_id", "hometown", "constellation", "school", "education_type"
+                "avatar","nickname","intro","birth", "age", "weight", "area_path", "area_id", "hometown", "constellation", "school", "education_type"
                 , "height", "myExpect", "extra_info", "work_type", "salary",'email','contact_mobile','active_point_text'
             ])->save($data);
             if($ret === false) {
