@@ -30,7 +30,7 @@
               </view>
             </view>
 
-            <!--填写生日、所在地、身高、体重、星座、籍贯、活跃地区-->
+            <!--填写生日、所在地、身高、体重、星座、活跃地区-->
             <view class="identity-item" 
               v-for="(item, ind) in options1" :key="'option1' + ind" 
               @click="openPopup(item.popup, item.key)"
@@ -49,26 +49,7 @@
             </view>
           </view>
 
-           <view class="phone-code-box">
-            <view class="cell">
-              <view class="lable">邮箱</view>
-              <view class="value">
-                <input style="text-align: right;" type="text" 
-					v-model="email" class="input" placeholder="有消息和邀约会发通知~"/>
-              </view>
-            </view>
-
-            <view class="cell">
-              <view class="lable">验证码</view>
-              <view class="code">
-                <input style="text-align: right" type="text" v-model="email_code"
-                  class="input phone_code" placeholder="填写验证码"/>
-                <view class="segmentation"></view>
-                <view class="text" @click="getSenCode"> {{ phone_text }}</view>
-              </view>
-            </view>
-          </view>
-        </view>
+ 
 		
          <view class="identity" :style="{ marginTop: '24rpx' }">
              <view class="identity-item" @click="openPopup(educationPopup)">
@@ -95,14 +76,44 @@
                 <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
               </view>
             </view>
+			
 			<view class="identity-item">
-			  <text class="label">学校</text>
+			  <text class="label">学校<text class="label-intro">（选填）</text></text>
 			  <input type="text" v-model="formData.school"
-			    class="input" placeholder="选填，填了没准校友来撩～"/>
+			    class="input" placeholder="填了没准校友来撩～"/>
 			</view>
+			
+			<view class="identity-item" @click="openPopup(homeTownPopup)">
+			    <text class="label"> 籍贯<text class="label-intro">（选填）</text></text>
+			    <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',
+			          'justify-content': 'flex-end', flex: 1, height: '100%',}">	
+			      <text class="choose_val">{{ formData.hometown}}</text>
+			      <image class="arrow_left" src="/static/mine_center/arrow_left.png"></image>
+			    </view>
+			</view>			
           </view>
 
-   
+		 <view class="phone-code-box">
+			 <view class="cell">
+			   <view class="lable">邮箱</view>
+			   <view class="value">
+				 <input style="text-align: right;" type="text" 
+					v-model="email" class="input" placeholder="有消息和邀约会发通知~"/>
+			   </view>
+			 </view>
+		 
+			 <view class="cell">
+			   <view class="lable">验证码</view>
+			   <view class="code">
+				 <input style="text-align: right" type="text" v-model="email_code"
+				   class="input phone_code" placeholder="填写验证码"/>
+				 <view class="segmentation"></view>
+				 <view class="text" @click="getSenCode"> {{ phone_text }}</view>
+			   </view>
+			 </view>
+		   </view>
+		 </view>  
+		 
           <view class="phone-code-box1">
             <view class="cell">
               <view class="lable">手机号</view>
@@ -286,7 +297,7 @@ const formRules = reactive({
   height: { required: true, message: "请选择身高" },
   weight: { required: true, message: "请选择体重" },
   constellation: { required: true, message: "请选择星座" },
-  hometown: { required: true, message: "请选择籍贯" },
+ // hometown: { required: true, message: "请选择籍贯" },
 });
 const store = useStore();
 const app = getCurrentInstance().appContext.app;
@@ -420,12 +431,12 @@ onLoad(async () => {
         popup: constellationPopup.value,
         title: "星座",
       },
-      {
+  /*    {
         key: "hometown",
         show: "hometown_name",
         popup: homeTownPopup.value,
         title: "籍贯",
-      },
+      },*/
 
     ];
     
@@ -446,82 +457,101 @@ onLoad(async () => {
     }
   });
 
-  await Promise.all([getEduList(), getConstellationList(), getWorkTypes()]);
-  if (isImprove.value == -1) {
+// 并行调用三个异步函数，等待所有函数执行完成
+// getEduList()：获取学历列表
+// getConstellationList()：获取星座列表
+// getWorkTypes()：获取工作类型列表
+await Promise.all([getEduList(), getConstellationList(), getWorkTypes()]);
+// 判断用户信息是否需要完善，isImprove.value == -1 表示需要完善信息
+if (isImprove.value == -1) {
+    // 调用接口获取用户需要完善的信息
     api.post("/user/get_improve_info").then((xres: any) => {
-      if (xres.code == 1) {
-        Object.assign(formData, xres.data);
-        if (
-          formData.constellation != null &&
-          formData.constellation.length > 0
-        ) {
-          let selected1 = constellationList.value.find(
-            (item) => item.value == formData.constellation
-          );
-          formData.constellation_name = selected1.name;
-        } else {
-          formData.constellation = null;
-          formData.constellation_name = null;
+        // 检查接口返回状态码是否为 1，1 表示请求成功
+        if (xres.code == 1) {
+            // 将接口返回的数据合并到 formData 对象中
+            Object.assign(formData, xres.data);
+            // 处理星座信息
+              if (
+                formData.constellation != null && formData.constellation.length > 0) {
+                // 在星座列表中查找与 formData 中星座值匹配的项
+                let selected1 = constellationList.value.find((item) => item.value == formData.constellation);
+                // 将找到的星座名称赋值给 formData 中的星座名称字段
+                formData.constellation_name = selected1.name;
+            } else {
+                 formData.constellation = null;
+                formData.constellation_name = null;
+            }
+
+            // 处理学历信息
+             if (formData.education_type != null && formData.education_type.length > 0) {
+                // 在学历列表中查找与 formData 中学历值匹配的项
+                let selected2 = educationalList.value.find((item) => item.value == formData.education_type);
+                // 将找到的学历名称赋值给 formData 中的学历名称字段
+                formData.education_type_name = selected2.name;
+            } else {
+                formData.education_type = null;
+                formData.education_type_name = null;
+            }
+
+            // 处理工作类型信息
+            if (formData.work_type != null && formData.work_type.length > 0) {
+                // 在工作类型列表中查找与 formData 中工作类型值匹配的项
+                let selected3 = workTypeList.value.find(
+                    (item) => item.value == formData.work_type
+                );
+                // 将找到的工作类型名称赋值给 formData 中的工作类型名称字段
+                formData.work_type_name = selected3.name;
+            } else {
+                formData.work_type = null;
+                formData.work_type_name = null;
+            }
+
+            // 处理家乡信息
+              if (formData.hometown != null && formData.hometown.length > 0) {
+                // 将家乡信息按逗号分割成数组
+                let home = formData.hometown.split(",");
+                // 取数组的最后一个元素作为新的家乡信息
+                formData.hometown = home[home.length - 1];
+            } else {
+                formData.hometown = null;
+                formData.hometown_name = null;
+            }
+
+            // 处理所在地信息
+            if (
+                formData.permanent_area != null &&
+                formData.permanent_area.length > 0
+            ) {
+                // 将所在地信息按逗号分割成数组
+                let area = formData.permanent_area.split(",");
+                // 取数组的最后一个元素作为新的所在地信息
+                formData.permanent_area = area[area.length - 1];
+            } else {
+                formData.permanent_area = null;
+                formData.permanent_area_name = null;
+            }
+
+            // 处理头像信息, 将接口返回的头像数组转换为包含路径和本地标识的对象数组
+            avatarList.value = xres.data.avatar.map((item) => {
+                return {
+                    path: item,
+                    local: false,
+                };
+            });
         }
-        if (
-          formData.education_type != null &&
-          formData.education_type.length > 0
-        ) {
-          let selected2 = educationalList.value.find(
-            (item) => item.value == formData.education_type
-          );
-          formData.education_type_name = selected2.name;
-        } else {
-          formData.education_type = null;
-          formData.education_type_name = null;
-        }
-        if (formData.work_type != null && formData.work_type.length > 0) {
-          let selected3 = workTypeList.value.find(
-            (item) => item.value == formData.work_type
-          );
-          formData.work_type_name = selected3.name;
-        } else {
-          formData.work_type = null;
-          formData.work_type_name = null;
-        }
-        if (formData.hometown != null && formData.hometown.length > 0) {
-          let home = formData.hometown.split(",");
-          formData.hometown = home[home.length - 1];
-        } else {
-          formData.hometown = null;
-          formData.hometown_name = null;
-        }
-        if (
-          formData.permanent_area != null &&
-          formData.permanent_area.length > 0
-        ) {
-          let area = formData.permanent_area.split(",");
-          formData.permanent_area = area[area.length - 1];
-        } else {
-          formData.permanent_area = null;
-          formData.permanent_area_name = null;
-        }
-        avatarList.value = xres.data.avatar.map((item) => {
-          return {
-            path: item,
-            local: false,
-          };
-        });
-      }
-      api.post("user/improve_field_list").then((vres: any) => {
-        if (vres.code == 1) {
-          const schoolInfo = vres.data.regular.find(
-            (uitem) => uitem.key == "school"
-          );
-          const eduInfo = vres.data.regular.find(
-            (uitem) => uitem.key == "education_type"
-          );
-          const workInfo = vres.data.regular.find(
-            (uitem) => uitem.key == "work_type"
-          );
-          const salaryInfo = vres.data.regular.find(
-            (uitem) => uitem.key == "salary"
-          );
+
+        // 调用接口获取用户信息完善字段列表
+        api.post("user/improve_field_list").then((vres: any) => {
+            // 检查接口返回状态码是否为 1，1 表示请求成功
+            if (vres.code == 1) {
+                // 在返回的数据中查找学校信息
+                const schoolInfo = vres.data.regular.find((uitem) => uitem.key == "school");
+                // 在返回的数据中查找学历信息
+                const eduInfo = vres.data.regular.find((uitem) => uitem.key == "education_type");
+                // 在返回的数据中查找工作类型信息
+                const workInfo = vres.data.regular.find((uitem) => uitem.key == "work_type");
+                // 在返回的数据中查找年收入信息
+                const salaryInfo = vres.data.regular.find((uitem) => uitem.key == "salary");
     /*      if (schoolInfo.is_require == 1) {
             formRules["school"] = {
               required: true,
@@ -683,13 +713,13 @@ const openJourney = async () => {
         });
         return;
       }
-      if (email_code.value == "") {
+   /*   if (email_code.value == "") {
         uni.showToast({
           icon: "none",
           title: "请输入验证码",
         });
         return;
-      }
+      }*/
       uni.showLoading({
         title: "正在完善...",
       });
@@ -802,10 +832,9 @@ const confirmBottom = (key: string) => {
   // education_type
   switch (key) {
     case "education_type":
-      formData.education_type =
-        educationalList.value[nowOptions.education_type[0]].value;
-      formData.education_type_name =
-        educationalList.value[nowOptions.education_type[0]].name;
+	console.log("educationalList的值：",educationalList);
+      formData.education_type = educationalList.value[nowOptions.education_type[0]].value;
+      formData.education_type_name = educationalList.value[nowOptions.education_type[0]].name;
       educationPopup.value.close();
       setTimeout(() => {
         workPopup.value.open();
@@ -813,8 +842,7 @@ const confirmBottom = (key: string) => {
       break;
     case "work_type":
       formData.work_type = workTypeList.value[nowOptions.work_type[0]].value;
-      formData.work_type_name =
-        workTypeList.value[nowOptions.work_type[0]].name;
+      formData.work_type_name =  workTypeList.value[nowOptions.work_type[0]].name;
       workPopup.value.close();
       setTimeout(() => {
         salaryPopup.value.open();

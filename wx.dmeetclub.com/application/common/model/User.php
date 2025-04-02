@@ -32,7 +32,7 @@ class User extends Model
     protected $type = [
         "extra_info" => "json",
         "label"      => "json",
-        "albums"     => "json"
+        "albums"     => "json"        
     ];
 
     //初始化数据
@@ -348,18 +348,42 @@ class User extends Model
         $labels = model('app\common\model\UserLabel')->whereIn('id', $labelIds)->where('is_delete', Dict::IS_FALSE)->field('id,name')->select();
         $this->label = $labels;
 
-        //获取最新的变更信息
-        $this->last_checked_avatar = model('app\common\model\UserChange')->where('user_id', $this->id)->whereNotNull('avatar')->order('create_time', 'desc')->value('avatar');
-        $this->last_checked_nickname = model('app\common\model\UserChange')->where('user_id', $this->id)->whereNotNull('nickname')->order('create_time', 'desc')->value('nickname');
-        $this->last_checked_intro = model('app\common\model\UserChange')->where('user_id', $this->id)->whereNotNull('intro')->order('create_time', 'desc')->value('intro');
+        // 查询并获取用户最新的头像变更记录，取第一条记录的头像字段值，将该值赋值给当前对象的 last_checked_avatar 属性
+        $this->last_checked_avatar = model('app\common\model\UserChange')
+            ->where('user_id', $this->id)->whereNotNull('avatar')->order('create_time', 'desc')->value('avatar');
+        $this->last_checked_albums = model('app\common\model\UserChange')
+        ->where('user_id', $this->id)->whereNotNull('avatar')->order('create_time', 'desc')->value('albums');
+        // 查询并获取用户最新的昵称变更记录，将该值赋值给当前对象的 last_checked_nickname 属性
+        $this->last_checked_nickname = model('app\common\model\UserChange')
+            ->where('user_id', $this->id)->whereNotNull('nickname')->order('create_time', 'desc')->value('nickname');
+        // 查询并获取用户最新的个人简介变更记录，将该值赋值给当前对象的 last_checked_intro 属性
+        $this->last_checked_intro = model('app\common\model\UserChange')
+            ->where('user_id', $this->id)->whereNotNull('intro')->order('create_time', 'desc')->value('intro');
 
-        //个人相册
+        // 获取用户的相册信息，如果相册信息为空则初始化为一个空数组
         $albums = $this->albums  ?: [];
+        $last_checked_albums = $this->last_checked_albums  ?: [];
+
+        // 将用户的头像添加到相册数组的开头
         array_unshift($albums, $this->avatar);
-        array_walk($albums, function(&$_album) {
+//       array_unshift($last_checked_albums, $this->last_checked_avatar);
+        // 遍历相册数组中的每个元素，对每个元素调用 cdnurl 函数进行处理，将处理后的结果重新赋值给原元素
+        // cdnurl 函数可能用于将图片路径转换为 CDN 地址，以提高图片加载速度
+ /*      array_walk($albums, function(&$_album) {
             $_album = cdnurl($_album, true);
         });
+
+       array_walk($last_checked_albums, function(&$_last_checked_albums) {
+            $_last_checked_albums = cdnurl($_last_checked_albums, true);
+        });*/
+        // 将处理后的相册数组赋值给当前对象的 albums_text 属性
         $this->albums_text = $albums;
+        $this->all_albums = $last_checked_albums;
+
+        //***********by Richard 2025-03-15
+
+        //by Richard 2025-03-15 end************/
+
 
         //扩展信息
         $extraInfo = $this->extra_info ?: [];
@@ -402,11 +426,11 @@ class User extends Model
             'follow_num', 'fans_num', 'new_message_num', 'school', 'education_type','birth_year', 'area', 'hometown', 'area_id', 'howntown_last_id',
             'is_improve', 'is_member', 'is_check_avatar','is_check_nickname','is_check_intro', 'constellation', 'birth',
             'complete_ratio','is_follow_wechat', 'is_cert_realname', 'is_cert_work', 'is_cert_education', 'intro', 'myExpect',  'label',
-            'last_checked_avatar','last_checked_nickname','last_checked_intro', 'extra_info','active_point_text','contact_mobile','red_envelope_balance','email'
+            'last_checked_avatar','last_checked_albums','last_checked_nickname','last_checked_intro', 'extra_info','active_point_text','contact_mobile','red_envelope_balance','email'
         ]);
 
         $this->append([
-            'avatar_text', 'albums_text', 'gender_text', 'member_expire_text', 'education_type_text', 'work_type_text', 'constellation_text',
+            'avatar_text', 'albums_text', 'all_albums', 'gender_text', 'member_expire_text', 'education_type_text', 'work_type_text', 'constellation_text',
             'cert' => [
                 'education_images_text', 'work_images_text', 'education_status_text', 'work_status_text', 'realname_status_text'
             ]
@@ -448,14 +472,20 @@ class User extends Model
      */
     public function list($where = [], $limit = 20, $order = null,$position=null)
     {
-        // 首页增加距离显示
-        $lon = 117.2227267;//经度
-        $lat = 31.820567;//纬度
-        if(isset($position) && false !== strpos($position, ',')) {
+        // 初始化经度和纬度，设置为上海世纪公园的位置
+        $lon = 121.5533; // 经度
+        $lat = 31.2294; // 纬度
+
+        // 检查传入的位置信息是否有效，若有效则将其拆分为经度和纬度
+        if (isset($position) && false !== strpos($position, ',')) {
             list($lon, $lat) = explode(',', $position);
         }
+        // 若未传入排序规则，则使用默认的排序规则（按照创建时间降序排列）
         $order = $order ?: "create_time desc";
-        $orderFunc = is_string($order) ? "orderRaw" : "order";
+        // 根据排序规则的类型选择合适的排序方法
+        // 如果 $order 是字符串，则使用 orderRaw 方法；否则使用 order 方法
+        $orderFunc = is_string($order)? "orderRaw" : "order";
+        // 构建查询语句，查询用户列表并进行分页
         $list = $this
             ->field("*, (st_distance_sphere(point(".$lon.",".$lat."), `active_point`)/1000) as distance, ST_AsText(`active_point`) as point_text")
             ->with(['cert'])
@@ -463,7 +493,10 @@ class User extends Model
             ->where(['is_improve' => Dict::IS_TRUE,'status'=>'normal'])
             ->{$orderFunc}($order)
             ->paginate($limit);
-        $areaNew = model('app\common\model\AreaNew')->column('id,name');
+
+        // 获取地区信息，将地区的 id 作为键，地区名称作为值存储在数组中
+        $areaNew = model('app\common\model\AreaNew')->column('name', 'id');
+        // 遍历查询结果，为每个用户添加地区信息和工作类型文本信息
         foreach($list as $key => $item)
         {
             $areaPath = $item->area_path;

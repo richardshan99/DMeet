@@ -15,7 +15,6 @@ use think\Request;
 
 /**
  * 地点管理 - 地点列表、非餐厅
- *
  * @icon   fa fa-dashboard
  * @remark
  */
@@ -26,7 +25,6 @@ class NoRestaurant extends Backend
      */
     protected $model = null;
     protected $shopCategoryList = null;
-
 
     public function __construct(Request $request = null)
     {
@@ -49,8 +47,51 @@ class NoRestaurant extends Backend
         //设置过滤方法
         $this->request->filter(['strip_tags']);
         if ($this->request->isAjax()) {
+           
             $areaNew = model('app\common\model\AreaNew')->column('id,name');
+            
             list($where, $sort, $order, $offset, $limit) = $this->buildparams(null);
+             
+            // 确保 $where 是一个数组
+            if (!is_array($where)) {
+                $where = [];
+            }
+
+            // 获取请求中的 country 参数
+            $filter = $this->request->get('filter');
+            $data = json_decode($filter, true);
+
+            // 检查解析是否成功
+            if (json_last_error() === JSON_ERROR_NONE) {
+                // 提取 country, province 和 city 的值
+                $country = isset($data['country']) ? $data['country'] : null;
+                $province = isset($data['province']) ? $data['province'] : null;
+                $city = isset($data['city']) ? $data['city'] : null;
+                $name = isset($data['name']) ? $data['name'] : null;
+                $shop_category_id = isset($data['shop_category_id']) ? $data['shop_category_id'] : null;
+                
+                if($country){
+                    $where['country']=$country;
+                }
+                if($province){
+                    $where['province']=$province;
+                }
+                if($city){
+                    $where['city']=$city;
+                }
+                if($name){
+                    $where['shop.name'] = ['like', "%{$name}%"];
+                }
+                if($shop_category_id){
+                    $where['shop_category_id'] = $shop_category_id;
+                }
+                
+                // 你可以在这里使用提取的值进行进一步处理
+                // 例如，查询数据库或返回响应
+            } else {
+                $this->error("JSON 解析错误: " . json_last_error_msg());
+            }
+
             $list = $this->model
                 ->field('*, ST_AsText(`point`) as point_text')
                 ->with(['category'])
@@ -58,9 +99,10 @@ class NoRestaurant extends Backend
                 ->order($sort, $order)
                 ->limit($offset, $limit)
                 ->paginate($limit);
-
+           
             foreach($list as $key => $item)
             {
+               
                 if(false !== strpos($item->point_text,"POINT")) {
                     preg_match('/\((.*?)\)/', $item->point_text, $matches);
                     $value = $matches[1];
@@ -68,18 +110,28 @@ class NoRestaurant extends Backend
                 } else {
                     $item->point_text = null;
                 }
+               
                  //地区
                 $item->area = DMUserArea($areaNew, $item->area_path);
+                
                 $item->append(["status_text", 'cash_type_text','area']);
                 $item->hidden(['point']);
+                
             }
+            
+
+           
+
             $result = array("total" => $list->total(), "rows" => $list->items());
 
+           
+           
             return json($result);
         }
-
+        
         $this->assignconfig('shopCategory', $this->shopCategoryList);
         return $this->view->fetch();
+        //李川 2025-03-09 10:00:00
     }
 
 
@@ -105,19 +157,28 @@ class NoRestaurant extends Backend
         }
         $params = $this->preExcludeFields($params);
 
+        //李川 2025-03-09 10:00:00
         //分析活动地区
         $areaPath = "";
         if(isset($params['country']) && !empty($params['country'])) { //国家
             $areaPath = model('app\common\model\AreaNew')->where('id', $params['country'])->value('path');
+            $countryname = model('app\common\model\AreaNew')->where('id', $params['country'])->value('name');
+           
         }
         if(isset($params['province']) && !empty($params['province'])) {//省份
             $areaPath = model('app\common\model\AreaNew')->where('id', $params['province'])->value('path');
+            $provincename = model('app\common\model\AreaNew')->where('id', $params['province'])->value('name');
         }
         if(isset($params['city']) && !empty($params['city'])) {//地市
             $areaPath = model('app\common\model\AreaNew')->where('id', $params['city'])->value('path');
+            $cityname = model('app\common\model\AreaNew')->where('id', $params['city'])->value('name');
 
         }
+        $params['country']=$params['country'] ?? '';
+        $params['province']=$params['province'] ?? '';
+        $params['city']=$params['city'] ?? '';
         $params['area_path'] = $areaPath;
+        $params['areaName'] = $provincename.','.$cityname;
         if(!empty($params['content']['content_images'])) {
             $params['content']['content_images'] = explode(',', $params['content']['content_images']);
         }
@@ -156,6 +217,7 @@ class NoRestaurant extends Backend
             $this->error(__('No rows were inserted'));
         }
         $this->success();
+        //李川 2025-03-09 10:00:00
     }
 
     /**
@@ -168,6 +230,7 @@ class NoRestaurant extends Backend
      */
     public function edit($ids = null)
     {
+        //李川 2025-03-09 10:00:00
         $row = $this->model
             ->field('*, ST_AsText(`point`) as point_text')
             ->where('id', $ids)
@@ -204,16 +267,22 @@ class NoRestaurant extends Backend
         $areaPath = "";
         if(isset($params['country']) && !empty($params['country'])) { //国家
             $areaPath = model('app\common\model\AreaNew')->where('id', $params['country'])->value('path');
+            $countryname = model('app\common\model\AreaNew')->where('id', $params['country'])->value('name');
+           
         }
         if(isset($params['province']) && !empty($params['province'])) {//省份
             $areaPath = model('app\common\model\AreaNew')->where('id', $params['province'])->value('path');
+            $provincename = model('app\common\model\AreaNew')->where('id', $params['province'])->value('name');
         }
         if(isset($params['city']) && !empty($params['city'])) {//地市
             $areaPath = model('app\common\model\AreaNew')->where('id', $params['city'])->value('path');
-
+            $cityname = model('app\common\model\AreaNew')->where('id', $params['city'])->value('name');
         }
+        $params['country']=$params['country'] ?? '';
+        $params['province']=$params['province'] ?? '';
+        $params['city']=$params['city'] ?? '';
         $params['area_path'] = $areaPath;
-
+        $params['areaName'] = $provincename.','.$cityname;
         if(!empty($params['content']['content_images'])) {
             $params['content']['content_images'] = explode(',', $params['content']['content_images']);
         }
@@ -242,6 +311,7 @@ class NoRestaurant extends Backend
             $this->error(__('No rows were updated'));
         }
         $this->success();
+        //李川 2025-03-09 10:00:00
     }
 
 

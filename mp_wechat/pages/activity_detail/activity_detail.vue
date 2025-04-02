@@ -32,7 +32,7 @@
 						<text class="txt">微信转发</text>
 					</view>
 				</button>
-				<view v-if="detail?.can_join" @click="openPayPopup" class="btns-left">
+				<view  @click="openPayPopup" class="btns-left">
 					<text>立即报名</text>
 				</view>
 			</view>

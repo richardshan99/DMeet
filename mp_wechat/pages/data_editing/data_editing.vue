@@ -89,7 +89,14 @@
               <view @click="savePhotos" class="userInfo-focus">
                 <text class="txt">保存</text>
               </view>
-            </view>			
+            </view>		
+			<!-- 
+			  引入 drag-img 组件用于展示和操作图片列表。该组件允许用户上传、排序和删除图片，提供了方便的图片管理功能。			
+			  具体属性说明如下：
+			  - keyName="path": 从列表元素对象中读取图片路径的键名。这里指定为 'path'，表示组件会从传入的图片对象中获取 'path' 属性作为图片的源路径。
+			  - v-model="avatarList": 使用 v-model 指令实现双向数据绑定，将组件内部的图片列表与外部的 avatarList 数据进行同步。
+					当组件内部的图片列表发生变化时，会自动更新 avatarList；反之，avatarList 变化时，组件也会相应地更新展示的图片。
+			 -->
             <drag-img keyName="path" v-model="avatarList" :cols="4":style="{ marginTop: '24rpx' }"></drag-img>
           </view>
 		  
@@ -155,16 +162,9 @@
           <text class="title">个人标签</text>
           <!-- <text class="describe">最多可添加15个标签</text> -->
         </view>
-        <view :style="{
-          display: 'flex',
-          flexDirection: 'column',
-          width: '100%',
-          maxHeight: '750rpx',
-          overflow: 'auto',
-        }">
-          <view v-for="(item, index) in labelList" :key="'label' + index" 
-		  :style="{borderBottom: index == labelList.length - 1 ? 'none' : '1px solid #E8EAEF',}" 
-		  class="tagsView-item">
+        <view :style="{display: 'flex', flexDirection: 'column', width: '100%', maxHeight: '750rpx', overflow: 'auto',}">
+        <view v-for="(item, index) in labelList" :key="'label' + index" 
+          :style="{borderBottom: index == labelList.length - 1 ? 'none' : '1px solid #E8EAEF',}" class="tagsView-item">
             <text class="title">{{ item.name }}</text>
             <view class="options">
               <view v-for="(citem, cind) in item.childlist" @click="selectTag(citem)" :key="'tag' + cind"
@@ -188,18 +188,15 @@ import { api } from "@/common/request/index.ts";
 import { getCurrentInstance, ref, computed } from "vue";
 import { useStore } from "vuex";
 import { onShow } from "@dcloudio/uni-app";
+
 const selectedLabels = ref([]); // 选择的
 const labelList = ref([]);
 const app = getCurrentInstance().appContext.app;
 const store = useStore();
 const userInfo = computed(() => store.state.user.userInfo);
 const tagsPopup = ref();
-
 const avatarList = ref([]);
-
-const navBack = () => {
-  uni.navigateBack();
-};
+const navBack = () => {uni.navigateBack();};
 
 const backtohome = () => {
 	// 对 selectedLabels 进行赋值
@@ -211,7 +208,7 @@ const backtohome = () => {
 		});
 		return;
 	}
-	uni.switchTab({url: '/pages/index/index'})
+	uni.switchTab({url: '/pages/mine/mine'})
 };	
 	
 const extraList = computed(() => {
@@ -272,7 +269,6 @@ const tabgetList = async () => {
       i.name = obj[i.id];
       return i;
     });
-//  console.log(groupById);
     tagsList.value = groupById;
   }
 }
@@ -280,12 +276,16 @@ const tabgetList = async () => {
 const lableListNew = ref([])
 
 onShow(() => {
-  avatarList.value = userInfo.value.albums_text.map((xitem: any) => {
+	console.log('albums_text 的值:', userInfo.value.albums_text);
+	console.log('all_albums 的值:', userInfo.value.all_albums);
+	
+	avatarList.value = userInfo.value.albums_text.map((xitem: any) => { 
     return {
       path: xitem,
       local: false,
     };
   });
+  
   api.post("user/label_list").then((res: any) => {
     if (res.code == 1) {
       lableListNew.value = res.data
@@ -318,49 +318,59 @@ onShow(() => {
   });
 });
 
+// 定义一个异步函数 savePhotos，用于保存图片并上传到七牛云
 const savePhotos = async () => {  
-  let notUploadImgs = avatarList.value.filter((item) => item.local);  
-  uni.showLoading({  // 未上传的头像
-    title: "loading...",
-    mask: true,
-  });
-  if (notUploadImgs.length > 0) {
-    const vres: any = await api.post("common/qiniu");
-    qiniuUploader.init({
-      domain: vres.data.cdnurl,
-      region: "ECN",
-      regionUrl: vres.data.uploadurl,
-      uptoken: vres.data.multipart.qiniutoken,
-    });
-    let tasks = [];
-    for (let img of notUploadImgs) {
-      tasks.push(uplaodFile(img.path));
-    }
-    if (tasks.length > 0) {
-      Promise.all(tasks)
-        .then((imgList) => {
-          let ind = 0;
-          for (let imgItem of avatarList.value) {
-            if (imgItem.local == true) {
-              imgItem.path = imgList[ind];
-              imgItem.local = false;
-              ind++;
-            }
-          }
-          submitAvatars();	
-        })
-        .catch((e) => {
-          uni.hideLoading();
-        });
-    }
-  } else {
-    submitAvatars();
-  }
+	// 过滤出 avatarList 中 local 属性为 true 的图片，这些图片是未上传的图片
+	let notUploadImgs = avatarList.value.filter((item) => item.local);  
+	  uni.showLoading({  // 显示加载提示框，提示用户正在加载中
+		title: "loading...",
+		mask: true,
+	  });
+	  // 如果存在未上传的图片
+	if (notUploadImgs.length > 0) {	
+		// 异步请求 common/qiniu 接口，获取七牛云的配置信息
+		const vres: any = await api.post("common/qiniu");
+		// 使用获取到的配置信息初始化七牛云上传器
+		qiniuUploader.init({
+		  domain: vres.data.cdnurl, 	// 七牛云存储的域名
+		  region: "ECN",	// 七牛云存储的区域
+		  regionUrl: vres.data.uploadurl,	// 七牛云上传的 URL
+		  uptoken: vres.data.multipart.qiniutoken,	// 七牛云上传的令牌
+		});
+		// 定义一个空数组 tasks，用于存储所有图片的上传任务
+		let tasks = [];
+		for (let img of notUploadImgs) {	// 遍历未上传的图片数组
+		  tasks.push(uplaodFile(img.path));	// 将每个图片的上传任务添加到 tasks 数组中
+		}
+		if (tasks.length > 0) {
+		  Promise.all(tasks)	// 使用 Promise.all 并行执行所有上传任务
+			.then((imgList) => {
+			  let ind = 0;
+			  for (let imgItem of avatarList.value) {
+				if (imgItem.local == true) {	// 如果当前图片是未上传的图片
+				// 将上传成功后的图片路径赋值给当前图片的 path 属性
+				  imgItem.path = imgList[ind];
+				  // 将当前图片的 local 属性设置为 false，表示已上传
+				  imgItem.local = false;
+				  ind++;
+				}
+			  }
+			  submitAvatars();	// 调用 submitAvatars 函数，提交头像信息
+			})
+			.catch((e) => {
+			  uni.hideLoading();
+			});
+		}
+	  } else {	// 如果没有未上传的图片，直接调用 submitAvatars 函数，提交头像信息
+		submitAvatars();
+	  }
 };
 
+// 定义一个名为 submitAvatars 的函数，用于提交头像信息到后端接口
 const submitAvatars = () => {
   api
     .post("user/edit_avatar", {
+	// 将 avatarList 数组中的每个元素的 path 属性提取出来，组成一个新的数组作为请求的参数
       avatar: avatarList.value.map((item) => item.path),
     })
     .then((xres: any) => {
@@ -370,6 +380,8 @@ const submitAvatars = () => {
           icon: "none",
           title:"user/edit_avatar提交成功",
         });
+		// 调用 store 的 commit 方法，触发 "setAvatar" 突变，将 avatarList 中的第一个元素作为参数传入
+		// 这通常用于更新 Vuex 状态管理中的用户头像信息
         store.commit("setAvatar", avatarList.value[0]);
       }
     })

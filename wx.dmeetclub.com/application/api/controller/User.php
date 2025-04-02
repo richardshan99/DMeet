@@ -1,4 +1,21 @@
 <?php
+/** \application\api\controller\User.php
+ * 此文件是会员接口相关的控制器文件，提供了一系列与会员操作相关的接口，主要功能总结如下：
+ * 1. 小程序授权登录：通过 `login` 方法实现用户的小程序授权登录功能。
+ * 2. 完善信息管理：
+ *    - `improveFieldList` 方法返回完善信息所需的字段列表。
+ *    - `getImproveInfo` 方法用于驳回或待完善用户获取历史提交数据。
+ *    - `improve` 方法处理用户完善信息的提交，包含信息验证、年龄计算、所在地和家乡信息处理等，并将待审核信息存入 `user_change` 数据表，同时提交成功后会向管理员发送邮件通知。
+ * 3. 用户信息编辑：
+ *    - `editAvatar` 方法用于编辑用户头像。
+ *    - `edit` 方法用于编辑用户的基本信息，包括自定义字段处理、年龄计算、所在地和家乡信息处理等。
+ *    - `editIntro` 方法用于编辑用户的自我介绍。
+ *    - `editmyExpect` 方法用于编辑用户对 TA 的要求/期望。
+ * 4. 标签管理：
+ *    - `labelList` 方法返回标签列表。
+ *    - `editLabel` 方法用于编辑用户的标签。
+ * 5. 获取用户信息：`info` 方法用于获取用户的基本信息。
+ */
 
 namespace app\api\controller;
 
@@ -101,13 +118,13 @@ class User extends BaseApi
         $rule = [];
         $message = [];
 
-        if(!Validate::is($data['email'], "email")){
+ /*       if(!Validate::is($data['email'], "email")){
             $this->renderError('邮箱格式不正确');
         }
         $ret = \app\common\library\Ems::check($data['email'], $data['email_code'], 'improve');
         if (!$ret){
             $this->renderError(__('邮箱验证码不正确'));
-        }
+        }*/
 
         $rule["nickname"] = 'require|unique:user,nickname,'.$user->id;
         $message['nickname.unique'] = '昵称已存在，请更换 ';
@@ -358,5 +375,35 @@ class User extends BaseApi
         $this->renderError("提交失败");
     }
 
+  /**
+     * 获取用户相册图片路径，根据审核状态从不同数据表获取
+     */
+    public function getUserAlbums()
+    {
+        $user = $this->getUser();
+
+        // 检查是否有未审核的图片变更
+        $userChange = UserChange::where('user_id', $user->id)
+            ->where('status', Dict::CERT_STATUS_WAIT) // 待审核状态为 Dict::CERT_STATUS_WAIT = 1
+            ->find();
+
+        if ($userChange) {
+            // 如果有未审核的变更，从 user_change 数据表获取图片路径
+            $albums = $userChange->albums ?: [];
+            array_unshift($albums, $userChange->avatar);
+        } else {
+            // 如果没有未审核的变更，从 user 数据表获取图片路径
+            $albums = $user->albums ?: [];
+            array_unshift($albums, $user->avatar);
+        }
+
+        if ($albums) {
+            array_walk($albums, function (&$album) {
+                $album = cdnurl($album, true);
+            });
+        }
+
+        $this->renderSuccess($albums);
+    }
 
 }

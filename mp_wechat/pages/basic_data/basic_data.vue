@@ -6,53 +6,29 @@
         background-color="transparent" title="基本资料" :statusBar="true"></uni-nav-bar>
       <view class="scroll">
         <view class="data">          
-          <view v-for="(item, index) in optionsTop"
-            @click="openSelect(item)"
-            class="data-item"
-            :key="'optionTop' + index"
-            :class="{ bd: index < optionsTop.length - 1 }">
+          <view v-for="(item, index) in optionsTop"  @click="openSelect(item)"
+            class="data-item":key="'optionTop' + index" :class="{ bd: index < optionsTop.length - 1 }">
             <text class="label">{{ item.label}}</text>
             <view :style="{display: 'flex',flexDirection: 'row',alignItems: 'center',}">
-              <input
-                v-if="item.type == 'input'"
-                type="text"
-                v-model="basicInfo[item.key]"
-                class="input"/> 
+              <input v-if="item.type == 'input'" type="text"  v-model="basicInfo[item.key]" class="input"/> 
               <text v-else-if="item.key == 'height'" class="value">{{ basicInfo[item.showKey] }}cm</text>
               <text v-else-if="item.key == 'weight'" class="value">{{ basicInfo[item.showKey] }}kg</text>
               <text v-else-if="item.key == 'activeRegion'" class="value">
                 {{ active_Name == "" ? "请选择活跃区域" : active_Name }}</text>
               <text v-else class="value">{{ basicInfo[item.showKey] }}</text>
-              <image v-if="item.type == 'select'"
-                src="/static/mine_center/arrow_left.png" class="arrow"></image>
+              <image v-if="item.type == 'select'" src="/static/mine_center/arrow_left.png" class="arrow"></image>
             </view>
           </view>
         </view>
+
         <view class="data" :style="{ marginTop: '24rpx' }">
-          <view
-            v-for="(item, index) in optionsBottom"
-            @click="openSelect(item)"
-            class="data-item"
-            :key="'optionBottom' + index"
-            :class="{ bd: index < optionsBottom.length - 1 }">
+          <view v-for="(item, index) in optionsBottom"  @click="openSelect(item)"
+            class="data-item" :key="'optionBottom' + index":class="{ bd: index < optionsBottom.length - 1 }">
             <text class="label">{{ item.label}}</text>
-            <view :style="{
-                display: 'flex',
-                flexDirection: 'row',
-                alignItems: 'center',}"
-            >
-              <input
-                v-if="item.type == 'input'"
-                type="text"
-                v-model="basicInfo[item.key]"
-                class="input"
-              />
+            <view :style="{display: 'flex', flexDirection: 'row', alignItems: 'center',}">
+              <input v-if="item.type == 'input'" type="text" v-model="basicInfo[item.key]" class="input"/>
               <text v-else class="value">{{ basicInfo[item.showKey] }}</text>
-              <image
-                v-if="item.type == 'select'"
-                src="/static/mine_center/arrow_left.png"
-                class="arrow"
-              ></image>
+              <image v-if="item.type == 'select'" src="/static/mine_center/arrow_left.png" class="arrow"></image>
             </view>
           </view>
         </view>
@@ -61,13 +37,7 @@
           <view class="data-item">
             <view class="code-lable">手机号</view>
             <view class="code-value">
-              <input
-                style="text-align: right"
-                type="number"
-                v-model="phone"
-                class="input"
-                placeholder="请输入手机号"
-              />
+              <input style="text-align: right" type="number" v-model="phone" class="input" placeholder="请输入手机号"/>
             </view>
           </view>
         </view>
@@ -76,41 +46,17 @@
           <view class="data-item">
             <view class="code-lable">邮箱</view>
             <view class="code-value">
-              <input
-                :disabled="!updataPhone"
-                style="text-align: right"
-                type="input"
-                v-model="email"
-                class="input"
-                placeholder="请输入邮箱"
-              />
-
-              <text
-                v-if="!updataPhone"
-                class="updata"
-                @click="updataPhone = true"
-                >修改</text
-              >
+              <input style="text-align: right"  type="input" v-model="email" class="input" placeholder="请输入邮箱"/>
             </view>
           </view>
 
-          <view class="data-item" v-if="updataPhone">
+          <view class="data-item">
             <view class="code-lable">验证码</view>
             <view class="code-value">
-              <input
-                style="text-align: right"
-                type="text"
-                v-model="email_code"
-                class="input phone_code"
-                placeholder="填写验证码"
-              />
-
+              <input style="text-align: right" type="text" v-model="email_code" class="input phone_code" placeholder="填写验证码"/>
               <template>
                 <view class="segmentation"></view>
-                <text class="code" @click="getSenCode">{{
-                  phone_text
-                }}</text></template
-              >
+                <text class="code" @click="getSenCode">{{phone_text}}</text></template>
             </view>
           </view>
         </view>
@@ -524,7 +470,7 @@ const optionsTop = reactive([
     popInfo: null,
   },
   {
-    label: "家乡",
+    label: "籍贯",
     key: "hometown",
     showKey: "hometown_name",
     type: "select",
@@ -565,6 +511,7 @@ const optionsBottom = [
     type: "select",
     popInfo: null,
   },
+
 ];
 const basicInfo = reactive({
   nickname: null, // 昵称
@@ -594,7 +541,6 @@ const formRules = reactive({
   weight: { required: true, message: "请选择体重" },
   permanent_area: { required: true, message: "请选择所在地" },
   constellation: { required: true, message: "请选择星座" },
-  hometown: { required: true, message: "请选择家乡" },
 });
 
 const updataPhone = ref(false); // 修改手机号

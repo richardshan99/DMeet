@@ -132,9 +132,9 @@ class Index extends BaseApi
             $user = $this->getUser();
         /* 根据用户信息完善情况确定推荐用户的数量
          * 若用户信息未完善（is_improve 为 Dict::IS_FALSE），则仅推荐 1 名用户
-         * 若用户信息已完善，则推荐 20 名用户
+         * 若用户信息已完善，则推荐 30 名用户
          */
-            $limit = $user->is_improve == Dict::IS_FALSE ? 1 : 20;
+            $limit = $user->is_improve == Dict::IS_FALSE ? 1 : 30;
         }catch (\Exception $ex) {
             $user = null;            
             $limit = 1; //未登录展示一个用户
@@ -154,24 +154,9 @@ class Index extends BaseApi
         $list = (new \app\common\model\User)->list(function($query) use($user, $request) {
         if(!empty($user)) { // 若用户已登录
             $searchArea = $request->post('area_id', null, 'intval,trim');  // 获取用户筛选的地区 ID
-        /*    if(empty($searchArea)) {  // 若用户未指定筛选地区
-                // 默认使用用户所在地区的 ID，若用户所在地区 ID 为空则设为 -1
-                $searchArea = $user->area_id ?: -1;
-                // 获取后台设置的默认地址
-                $defaultPosition = Config::get('site.default_position');
-                if ($defaultPosition) {
-                    $defaultPosition = explode('-', $defaultPosition);
-                    $defaultPositionId = array_pop($defaultPosition);
-                    $defaultAreaId = model('app\common\model\AreaNew')->where(['name' => trim($defaultPositionId)])->value('id');
-                    $searchArea = $defaultAreaId ?: $searchArea;
-                }
-            }
-            $query->where("find_in_set({$searchArea}, `area_path`)");*/
-
             if ($searchArea!== null && $searchArea > 0) {   //初始化推荐列表不按地区筛选，直接显示所有结果
                 $query->where("find_in_set({$searchArea}, `area_path`)");
-            }
-            
+            }            
             $searchGender = $request->post('gender', 0, 'intval,trim');  //筛选 - 性别
             if(empty($searchGender)) {                    
          // $searchGender = $user->gender == Dict::GENDER_MALE ? Dict::GENDER_FEMALE : Dict::GENDER_MALE; //默认展示异性
@@ -208,6 +193,11 @@ class Index extends BaseApi
         }
     }, $limit, 'distance asc',$position);   //按照距离从近到远排序
 
+    // 检查查询结果是否为空
+    if ($list->isEmpty()) {
+        $this->renderSuccess([]);
+        return;
+}
     //找出所有二级标签
     $labels = model('app\common\model\UserLabel')->where('is_delete', Dict::IS_FALSE)->column('name', 'id');
     foreach($list as $key => $item) // 遍历推荐用户列表

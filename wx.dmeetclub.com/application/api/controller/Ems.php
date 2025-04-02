@@ -38,23 +38,11 @@ class Ems extends Api
         if ($last && time() - $last['createtime'] < 60) {
             $this->error(__('发送频繁'));
         }
-        // if ($event) {
-        //     $userinfo = User::getByEmail($email);
-        //     if ($event == 'register' && $userinfo) {
-        //         //已被注册
-        //         $this->error(__('已被注册'));
-        //     } elseif (in_array($event, ['changeemail']) && $userinfo) {
-        //         //被占用
-        //         $this->error(__('已被占用'));
-        //     } elseif (in_array($event, ['changepwd', 'resetpwd']) && !$userinfo) {
-        //         //未注册
-        //         $this->error(__('未注册'));
-        //     }
-        // }
         if (!Validate::is($email, "email")) {
             $this->error(__("请填写正确邮箱地址"));
         }
         $ret = Emslib::send($email, null, $event);
+        
         if ($ret) {
             $this->success(__('发送成功'));
         } else {

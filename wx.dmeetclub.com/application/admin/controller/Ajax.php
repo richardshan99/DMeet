@@ -333,4 +333,41 @@ class Ajax extends Backend
         $this->success('', null, $list);
     }
 
+    //李川 2025-03-09 10:00:00
+    /**
+     * 获取已经存在的门店地区列表
+     * @return void
+     * @throws \think\db\exception\DataNotFoundException
+     * @throws \think\db\exception\ModelNotFoundException
+     * @throws \think\exception\DbException
+     */
+    public function getShopArea()
+    {
+        $pid = $this->request->get('pid', null, 'trim,intval');
+        $provincelist=[];
+        $citylist=[];
+        $shop=model('app\common\model\Shop')->field('area_path')->select();
+        foreach ($shop as $key => $value) {
+            $areaArray = explode(',', $value['area_path']);
+            $province= $areaArray[3];
+            $provincelist[]=($province);
+            $city= $areaArray[4];
+            $citylist[]=($city);
+        }
+        $provincelist = array_unique($provincelist);
+        $citylist = array_unique($citylist);
+        
+       
+        //echo json_encode($provincelist);die;
+        if(!$pid) {
+            $list = model('app\common\model\AreaNew')->field('id as value, name')->whereIn('id', $provincelist)->select();
+        }else{
+            $list = model('app\common\model\AreaNew')->field('id as value, name')->where('pid', $pid)->whereIn('id', $citylist)->select();
+        }
+        if(empty($list)) {
+            $list = null;
+        }
+        $this->success('', null, $list);
+    }
+    //李川 2025-03-09 10:00:00
 }

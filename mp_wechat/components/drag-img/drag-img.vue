@@ -1,48 +1,57 @@
 <template>
-	<view class="drag-img">
-		<template v-if="viewWidth">
-			<movable-area class="drag-img-area" :style="{ height: areaHeight }" 
-			@mouseenter="mouseenter" @mouseleave="mouseleave">
-				<movable-view v-for="(item, index) in imageList" :key="item.id" 
-					class="drag-img-area-view" direction="all" 
-					:y="item.y"	:x="item.x" 
-					:damping="40" 
-					:disabled="item.disable" 
-					@change="onChange($event, item)"
-					@touchstart="touchstart(item)" 
-					@mousedown="touchstart(item)" 
-					@touchend="touchend(item)"
-					@mouseup="touchend(item)" 
-					:style="{width: viewWidth + 'px', height: viewWidth + 'px', 
-					  'z-index': item.zIndex, 
-					  opacity: item.opacity }">
-					<view class="drag-img-area-view-image" :style="{
-						width: childWidth, height: childWidth, 
-						borderRadius: borderRadius + 'rpx',
-						transform: 'scale(' + item.scale + ')' }">
-						<image class="drag-img-area-view-image-img" :src="item.src" mode="aspectFill"></image>
-						<view class="drag-img-area-view-image-del" @click="delImages(item, index)"
-							@touchstart.stop="delImageMp(item, index)"
-							@touchend.stop="nothing()" @mousedown.stop="nothing()" @mouseup.stop="nothing()">
-							<image class="del-img" src="./icon_del.png"></image>
-						</view>
-					</view>
-				</movable-view>
-				<view class="drag-img-area-view-add" v-if="imageList.length < number"
-					:style="{ top: add.y, left: add.x, width: viewWidth + 'px', height: viewWidth + 'px' }"
-					@click="addImages">
-					<view class="add-view"
-						:style="{ width: childWidth, height: childWidth }">
-						<image :style="{ width: childWidth, height: childWidth }"
-							src="./icon_add.png">
-						</image>
-					</view>
-				</view>
-			</movable-area>
-
-		</template>
-	</view>
+    <!-- 最外层容器，使用 drag-img 类名 -->
+    <view class="drag-img">
+        <!-- 仅当 viewWidth 存在时渲染内部内容 -->
+        <template v-if="viewWidth">
+            <!-- 可移动区域，设置高度为计算得到的 areaHeight -->
+            <!-- 绑定鼠标进入和离开事件 -->
+            <movable-area class="drag-img-area" :style="{ height: areaHeight }" 
+                          @mouseenter="mouseenter" @mouseleave="mouseleave">
+                <!-- 遍历 imageList 数组，为每个图片项创建一个可移动视图 -->
+                <movable-view v-for="(item, index) in imageList" :key="item.id" 
+                              class="drag-img-area-view" direction="all" 
+                              :y="item.y" :x="item.x" 
+                              :damping="40" 
+                              :disabled="item.disable" 
+                              @change="onChange($event, item)"
+                              @touchstart="touchstart(item)" 
+                              @mousedown="touchstart(item)" 
+                              @touchend="touchend(item)"
+                              @mouseup="touchend(item)" 
+                              :style="{width: viewWidth + 'px', height: viewWidth + 'px', 
+                                       'z-index': item.zIndex, 
+                                       opacity: item.opacity }">
+                    <!-- 图片显示区域，设置宽度、高度、圆角和缩放比例 -->
+                    <view class="drag-img-area-view-image" :style="{
+                        width: childWidth, height: childWidth, 
+                        borderRadius: borderRadius + 'rpx',
+                        transform: 'scale(' + item.scale + ')' }">
+                        <!-- 显示图片，使用 aspectFill 模式 -->
+                        <image class="drag-img-area-view-image-img" :src="item.src" mode="aspectFill"></image>
+                        <!-- 删除按钮区域，绑定点击事件 -->
+                        <view class="drag-img-area-view-image-del" @click="delImages(item, index)"
+                              @touchstart.stop="delImageMp(item, index)"
+                              @touchend.stop="nothing()" @mousedown.stop="nothing()" @mouseup.stop="nothing()">
+                            <image class="del-img" src="./icon_del.png"></image>
+                        </view>
+                    </view>
+                </movable-view>
+                <!-- 添加图片按钮，仅当图片数量小于限制数量时显示 -->
+                <view class="drag-img-area-view-add" v-if="imageList.length < number"
+                      :style="{ top: add.y, left: add.x, width: viewWidth + 'px', height: viewWidth + 'px' }"
+                      @click="addImages">
+                    <view class="add-view"
+                          :style="{ width: childWidth, height: childWidth }">
+                        <image :style="{ width: childWidth, height: childWidth }"
+                               src="./icon_add.png">
+                        </image>
+                    </view>
+                </view>
+            </movable-area>
+        </template>
+    </view>
 </template>
+
 
 <script>
 	import { mapState } from 'vuex';
@@ -198,33 +207,37 @@
 			},
 		},
 		created() {
-//			this.width = uni.getSystemInfoSync().windowWidth
 			uni.getSystemInfo({
 				success: (res) => { this.width = res.windowWidth; },
 				fail: (err) => { console.error('getSystemInfo获取系统信息失败:', err); }
         	});
 		},
+		
 		mounted() {
+			 // 创建一个选择器查询对象，用于查询当前组件内的元素信息
 			const query = uni.createSelectorQuery().in(this)
+			// 选择类名为 'drag-img' 的元素，并获取其边界矩形信息
 			query.select('.drag-img').boundingClientRect(data => {
-				this.colsValue = this.cols
+				this.colsValue = this.cols  // 将组件 props 中的 cols 属性值赋给 colsValue，用于后续计算图片列数
 				this.viewWidth = data.width / this.cols
 				if (this.imageWidth > 0) {
 					this.viewWidth = this.rpx2px(this.imageWidth)
 					this.colsValue = Math.floor(data.width / this.viewWidth)
 				}
-				let list = this.value
+				let list = this.value 	// 获取组件的 value 属性值，该值通常是一个包含图片信息的数组
 				// #ifdef VUE3
 				list = this.modelValue
 				// #endif
-				for (let item of list) {
+				for (let item of list) {  // 遍历图片信息数组
+				// 调用 getSrc 方法从 item 中获取图片的源地址，并将其作为参数传递给 addProperties 方法
+					// addProperties 方法会将图片信息添加到 imageList 数组中，并进行相关的初始化设置
 					this.addProperties(this.getSrc(item))
 				}
-				this.first = false
-
+				this.first = false 	// 将 first 标志设置为 false，表示初始化完成
 			})
-			query.exec()
+			query.exec() 	// 执行查询操作，触发上述回调函数
 		},
+		
 		methods: {
 			getSrc(item) {
 				if (this.keyName !== null) {

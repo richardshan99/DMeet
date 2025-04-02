@@ -208,8 +208,8 @@ class UserChange Extends Model
             }
 
             if(isset($data)) {
-                //完善状态变为待完善 2024-7-16 审核驳回变为待审核
-                $data['is_improve'] = Dict::USER_IMPROVE_FALSE;
+                //审核驳回变为待审核，by Ricchard
+                $data['is_improve'] = Dict::USER_IMPROVE_AUDIT;
                 $result = $user->allowField(true)->save($data);
             }
             
