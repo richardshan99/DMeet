@@ -366,26 +366,29 @@ const changeCurrent = (e) => {
   }
 };
 
+//李川
 const nextStep = () => {
-  console.log(shopDetail);
-
-  uni.$emit("updateMeetLocation", {
-    address: isCanteenType.value ? shopDetail.address : "",
-    isCanteenType: isCanteenType.value,
-    shopId: shopDetail.id,
-    shopName: shopDetail.name,
-    shopImg: shopDetail.thumb_text, //假的
-    packagePrice:
-      currentPackage.value == 1
-        ? shopDetail.package1.price
-        : shopDetail.package2.price,
-    packageName:
-      currentPackage.value == 1
-        ? shopDetail.package1.name
-        : shopDetail.package2.name,
-    packageType: currentPackage.value,
+  uni.navigateTo({
+    url: "/pages/give_invitation/give_invitation?convene=T",
+    success: () => {
+      uni.$emit("updateMeetLocation", {
+        address: isCanteenType.value ? shopDetail.address : "",
+        isCanteenType: isCanteenType.value,
+        shopId: shopDetail.id,
+        shopName: shopDetail.name,
+        shopImg: shopDetail.thumb_text, //假的
+        packagePrice:
+          currentPackage.value == 1
+            ? shopDetail.package1.price
+            : shopDetail.package2.price,
+        packageName:
+          currentPackage.value == 1
+            ? shopDetail.package1.name
+            : shopDetail.package2.name,
+        packageType: currentPackage.value,
+      });
+    }
   });
-  uni.navigateBack();
 };
 
 const navBack = () => {

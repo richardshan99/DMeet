@@ -187,7 +187,7 @@ import * as qiniuUploader from "@/common/upload/qiniuUploader.ts";
 import { api } from "@/common/request/index.ts";
 import { getCurrentInstance, ref, computed } from "vue";
 import { useStore } from "vuex";
-import { onShow } from "@dcloudio/uni-app";
+import { onLoad,onShow } from "@dcloudio/uni-app";
 
 const selectedLabels = ref([]); // 选择的
 const labelList = ref([]);
@@ -199,9 +199,8 @@ const avatarList = ref([]);
 const navBack = () => {uni.navigateBack();};
 
 const backtohome = () => {
-	// 对 selectedLabels 进行赋值
-	selectedLabels.value = Object.assign([], userInfo.value.label);
-	if (selectedLabels.value.length < 5) {
+	console.log(selectedLabels.value);
+	if (tagsList.value.length < 5) {
 		uni.showToast({
 		  icon: "none",
 		  title: "请至少选择5个标签",
@@ -247,7 +246,7 @@ const groupBy = (array, key) => {
 };
 
 const tabgetList = async () => {
-  const res = await api.post("user/info")
+  const res = await api.post("user/info");
   if (res.code == 1) {
     store.commit("setUserInfo", res.data);
     const obj = {};
@@ -275,6 +274,7 @@ const tabgetList = async () => {
 
 const lableListNew = ref([])
 
+
 onShow(() => {
 	console.log('albums_text 的值:', userInfo.value.albums_text);
 	console.log('all_albums 的值:', userInfo.value.all_albums);
@@ -288,6 +288,7 @@ onShow(() => {
   
   api.post("user/label_list").then((res: any) => {
     if (res.code == 1) {
+		console.log(selectedLabels.value);
       lableListNew.value = res.data
       labelList.value = res.data
         .filter((item: any) => item.childlist.length > 0)
@@ -378,7 +379,7 @@ const submitAvatars = () => {
       if (xres.code == 1) {
         uni.showToast({
           icon: "none",
-          title:"user/edit_avatar提交成功",
+          title: xres.msg,
         });
 		// 调用 store 的 commit 方法，触发 "setAvatar" 突变，将 avatarList 中的第一个元素作为参数传入
 		// 这通常用于更新 Vuex 状态管理中的用户头像信息
@@ -405,6 +406,7 @@ const uplaodFile = (path: string) => {
 };
 
 const saveLabels = async () => {
+	console.log(selectedLabels);
   if (selectedLabels.value.length < 5) {
     uni.showToast({
       icon: "none",
@@ -419,7 +421,7 @@ const saveLabels = async () => {
     tabgetList()
     uni.showToast({
       icon: "none",
-      title: "个人标签提交成功",
+      title: res.msg,
     });
   }
 };

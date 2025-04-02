@@ -7,15 +7,27 @@
       "
     ></image>
     <view class="main-base">
+		<!--李川-->
+		
       <uni-nav-bar
         left-icon="left"
         @clickLeft="navBack"
         :border="false"
         :shadow="false"
-        :title="pageTitle"
+       
         background-color="transparent"
         :status-bar="true"
       ></uni-nav-bar>
+	  <view class="topfix">
+	  	<view class="topfix-left" @click="openCity">
+	  		<image src="/static/activity/location.png" class="location"></image>
+	  		<text class="city">{{activeCity.name}}</text>
+	  		<view class="down_icon">
+	  			<image :style="{transform: `rotate(${cityFlag?180:0}deg)`}" class="img" src="/static/activity/arrow_down.png"></image>
+	  		</view>
+	  	</view>
+	  	
+	  </view>
       <view :scroll-x="true" class="scroll_bar">
         <view
           @click="chooseType({ id: null, name: '全部' })"
@@ -137,15 +149,22 @@
     <uni-popup ref="cityPopup" type="bottom">
       <city-select @confirm="confirmSelectCity"></city-select>
     </uni-popup>
-
-    <view class="float" @click="goRouter()">我是商家</view>
+	<!--李川-->
+    <!--<view class="float" @click="goRouter()">我是商家</view>-->
   </view>
+  <uni-popup ref="citySelectPopup" type="bottom" @maskClick="setStatus">
+  	<city-select :nowOption="[0,0,0]" @confirm="confirmCity" @cancel="setStatus"></city-select>
+  </uni-popup>
 </template>
 
 <script lang="ts" setup>
 import { api } from "@/common/request/index.ts";
-import { reactive, ref, getCurrentInstance } from "vue";
+import { reactive, ref, getCurrentInstance,computed } from "vue";
 import { onLoad } from "@dcloudio/uni-app";
+import { useStore } from "vuex";
+import { onShow } from "@dcloudio/uni-app"
+const store = useStore();
+const token = computed(() => store.state.user.token);
 const { proxy } = getCurrentInstance();
 const app = getCurrentInstance().appContext.app;
 const type = ref(1);
@@ -188,12 +207,49 @@ onLoad(() => {
         if (res.code == 1 && res.data.length > 0) {
           typeList.value = res.data;
           // Object.assign(currentType,res.data[0])
-          getShops(true);
+          getShops(true,'');//李川
         }
       });
     }
   });
 });
+
+//李川
+const activeCity = reactive({
+		name: null,
+		id: null
+	})
+const currentCity = ref(0);
+const defaultCity = computed(() => store.state.user.defaultCity);
+const citySelectPopup = ref() // 城市弹窗
+const cityFlag = ref(false)
+const openCity = () => {
+		cityFlag.value = !cityFlag.value
+		citySelectPopup.value.open()
+		
+	}
+const confirmCity = (options,name,cityId,cityName) => {
+		console.log(cityName);
+		setStatus()
+		console.log('confirmCity');
+		getShops(true,cityName);
+	}	
+	
+const setStatus = () => {
+		cityFlag.value = !cityFlag.value
+}
+
+onShow(() => {
+		 if (token.value != null) {
+			 if (defaultCity.value != null) {
+			 	activeCity.id = defaultCity.value.cityInd
+			 	activeCity.name = defaultCity.value.child
+			 
+			 }
+			 
+		 }
+	})
+	
 
 // 前往商家申请入驻页面
 const goRouter = () => {
@@ -263,7 +319,7 @@ const toShopDetail = (item: any) => {
 const chooseType = (item: any) => {
   if (currentType.id != item.id) {
     Object.assign(currentType, item);
-    getShops(true);
+    getShops(true,'');
   }
 };
 
@@ -273,10 +329,10 @@ const navBack = () => {
 
 const loadShops = () => {
   pageNo++;
-  getShops(false);
+  getShops(false,'');
 };
 
-const getShops = async (refresh: boolean) => {
+const getShops = async (refresh: boolean,cityName:string) => {
   if (refresh) {
     pageNo = 1;
     finish.value = false;
@@ -294,6 +350,10 @@ const getShops = async (refresh: boolean) => {
       ...transfer,
       page: pageNo,
     };
+	if(cityName!=''){
+		params.area=cityName;
+		params.position=0;
+	}
     console.log(type.value, " type.value---");
 
     if (type.value == 2) {
@@ -323,6 +383,72 @@ const getShops = async (refresh: boolean) => {
 </script>
 
 <style lang="scss" scoped>
+	.topfix{
+		width: 100%;
+		
+		display: flex;
+		flex-direction: row;
+		align-items: center;
+		justify-content: space-between;
+		margin-bottom: 8rpx;
+		&-left{
+			margin-left: 32rpx;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			.location{
+				width: 40rpx;
+				height: 40rpx;
+			}
+			.city{
+				font-size: 32rpx;
+				color: #1D2129;
+				font-weight: 600;
+				margin-left: 8rpx;
+			}
+			.down_icon{
+				width: 32rpx;
+				height: 32rpx;
+				background: rgba(0,0,0,0.05);
+				border-radius: 32rpx;
+				margin-left: 16rpx;
+				display: flex;
+				flex-direction: row;
+				align-items: center;
+				justify-content: center;
+				.img{
+					width: 16rpx;
+					height: 8rpx;
+					transition-property: transform;
+					transition-duration: 200ms;
+					transition-timing-function: linear;
+				}
+			}
+		}
+		&-type{
+			margin-right: 32rpx;
+			padding: 0 24rpx;
+			box-sizing: border-box;
+			height: 48rpx;
+			background-color: rgba(0,0,0,0.05);
+			border-radius: 32rpx;
+			display: flex;
+			flex-direction: row;
+			align-items: center;
+			.txt{
+				font-size: 24rpx;
+				color: #1D2129;
+			}
+			.down{
+				margin-left: 8rpx;
+				width: 16rpx;
+				height: 8rpx;
+				transition-property: transform;
+				transition-duration: 200ms;
+				transition-timing-function: linear;
+			}
+		}
+	}
 .main {
   width: 100%;
   height: 100%;

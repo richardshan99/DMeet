@@ -6,6 +6,7 @@
         app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'
       "
     ></image>
+	
     <view class="main-base">
       <uni-nav-bar
         left-icon="left"
@@ -333,6 +334,7 @@
     <view @click="publishMeeting" class="main-gather">
       <text>发起召集</text>
     </view>
+
   </view>
 </template>
 
@@ -341,6 +343,7 @@ import { api } from "@/common/request/index.ts";
 import { ref, reactive, getCurrentInstance, computed } from "vue";
 import { onLoad, onUnload } from "@dcloudio/uni-app";
 import { useStore } from "vuex";
+import { onShow } from "@dcloudio/uni-app"
 const store = useStore();
 const token = computed(() => store.state.user.token);
 const isImprove = computed(() => store.state.user.is_improve);
@@ -349,7 +352,7 @@ const app = getCurrentInstance().appContext.app;
 const meetIndex = ref(0);
 const noticeList = ref([]);
 const badgeNum = ref(0);
-
+let chooseFlag = false;
 const dataList = ref([]);
 let pageNo = 1;
 const loading = ref(false);
@@ -365,6 +368,8 @@ const firstMeetShare = reactive({
 const navBack = () => {
   uni.navigateBack();
 };
+
+
 onLoad(() => {
   api.post("/common/meet_share").then((vres: any) => {
     if (vres.code == 1 && vres.data.content != null) {
@@ -384,6 +389,8 @@ onLoad(() => {
     }
   });
 });
+
+
 
 const toShopDetail = (shopId, serviceName: string) => {
   if (shopId == null || shopId.length <= 0) {
@@ -431,6 +438,9 @@ const loadMeetings = () => {
   getMeetingList(false);
 };
 
+//李川
+const currentCity = ref(0);
+const defaultCity = computed(() => store.state.user.defaultCity);
 const publishMeeting = async () => {
   if (token.value == null) {
     uni.showModal({
@@ -471,9 +481,47 @@ const publishMeeting = async () => {
   const res: any = await api.post("/invitation/check");
   if (res.code == 1 && res.data.can_invite == 1) {
     // 允许
-    uni.navigateTo({
+    /*uni.navigateTo({
       url: "/pages/give_invitation/give_invitation?convene=T",
-    });
+    });*/
+	//李川
+	uni.getLocation({
+	  type: "wgs84",
+	  highAccuracyExpireTime: 3000,
+	  isHighAccuracy: true,
+	  success: (vres) => {
+	    if (vres.latitude != null) {
+	      uni.navigateTo({
+	        url: "/pages/meet_shops/meet_shops",
+	        success: (res) => {
+	          chooseFlag = false;
+	          if (currentCity.value == 0) {
+	            res.eventChannel.emit("acceptDataFromOpenerPage", {
+	              type: 1,
+	              cityName: defaultCity.value?.child,
+	              area: defaultCity.value?.all,
+	              cityId: defaultCity.value?.cityInd,
+	              cityShow:
+	                defaultCity.value?.parent + "-" + defaultCity.value?.child,
+	              position: vres.longitude + "," + vres.latitude,
+	            });
+	          } else {
+	           
+	          }
+	        },
+	        fail: () => {
+	          chooseFlag = false;
+	        },
+	      });
+	    } else {
+	      chooseFlag = false;
+	    }
+	  },
+	  fail: (err) => {
+	    chooseFlag = false;
+	  },
+	});
+	
   } else {
     if (res.data.code == -81) {
       uni.showModal({
