@@ -134,7 +134,7 @@
 	
     <uni-popup :style="{ zIndex: '99999' }" type="center" ref="completePopup">
       <meet-popup @confirm="toComplete"
-        msg="亲，请先完善个人信息🔒才能解锁更多功能哦~"
+        msg="你还没有完善资料，无法使用更多功能"
         confirmText="立即完善"
         cancelText="取消"
       ></meet-popup>

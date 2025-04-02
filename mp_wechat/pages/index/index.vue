@@ -1,32 +1,62 @@
 <template>
   <view class="content">
-    <image class="content-top" :src="app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'"></image>
+    <image
+      class="content-top"
+      :src="
+        app.config.globalProperties.$imgBase + '/xlyl_meet/index/top_back.png'
+      "
+    ></image>
     <view class="content-base">
       <view class="nav" :style="{ marginTop: statusBarHeight + 'px' }">
         <view class="nav-item">
-          <image @click="openSearch" class="icon" src="/static/index/search.png" :style="{ marginLeft: '32rpx' }"></image>
-          <image @click="openFilter" class="icon" src="/static/index/filter.png" :style="{ marginLeft: '40rpx' }"></image>
+          <image
+            @click="openSearch"
+            class="icon"
+            src="/static/index/search.png"
+            :style="{ marginLeft: '32rpx' }"
+          ></image>
+          <image
+            @click="openFilter"
+            class="icon"
+            src="/static/index/filter.png"
+            :style="{ marginLeft: '40rpx' }"
+          ></image>
         </view>
         <view class="nav-item" :style="{ justifyContent: 'center' }">
           <view @click="changeTab(0)" class="bar">
-            <text class="bar-txt" :class="tabIndex == 0 ? 'active' : 'common'">推荐</text>
-            <image :style="{ visibility: tabIndex == 0 ? 'visible' : 'hidden' }" class="bar-line"
-			  src="/static/index/current_line.png"></image>
+            <text class="bar-txt" :class="tabIndex == 0 ? 'active' : 'common'"
+              >推荐</text
+            >
+            <image
+              :style="{ visibility: tabIndex == 0 ? 'visible' : 'hidden' }"
+              class="bar-line"
+              src="/static/index/current_line.png"
+            ></image>
           </view>
-          <view class="divide"></view>      
-<!--      <view @click="changeTab(1)" class="bar">
-            <text class="bar-txt" :class="tabIndex == 1 ? 'active' : 'common'">动态</text>-->             
-            <!--暂时将动态替换成简介，by Richard-->
+          <view class="divide"></view>
+
+      
+<!--        <view @click="changeTab(1)" class="bar">
+            <text class="bar-txt" :class="tabIndex == 1 ? 'active' : 'common'">动态</text>*/ 
+            --> 
+            <!--暂时将动态替换成介绍，by Richard-->
         <view @click="navigateToWechatPage" class="bar"> 
-          <text class="bar-txt" :class="tabIndex == 1? 'active' : 'common'">简介</text>
-            <image :style="{ visibility: tabIndex == 1 ? 'visible' : 'hidden' }" class="bar-line"
-              src="/static/index/current_line.png"></image>
+          <text class="bar-txt" :class="tabIndex == 1? 'active' : 'common'">关于</text>
+            <image
+              :style="{ visibility: tabIndex == 1 ? 'visible' : 'hidden' }"
+              class="bar-line"
+              src="/static/index/current_line.png"
+            ></image>
           </view>
         </view>
+
         <view class="nav-item"></view>
       </view>
-	  
-      <recommendation @login="toLogin" class="content-bottom" v-if="tabIndex == 0"></recommendation>
+      <recommendation
+        @login="toLogin"
+        class="content-bottom"
+        v-if="tabIndex == 0"
+      ></recommendation>
       <trends @login="loginOrComplete" class="content-bottom" v-else></trends>
     </view>
     <view :style="{ height: '96px' }"></view>
@@ -240,8 +270,7 @@ onLoad((options: any) => {
     isHighAccuracy: true,
     highAccuracyExpireTime: 3000,
     success: function (res) {
-      console.log("当前位置的经度：" + res.longitude);
-      console.log("当前位置的纬度：" + res.latitude);
+   
 
       api.post("index/info", {
           point: [res.longitude, res.latitude].toString(),
@@ -360,10 +389,10 @@ const focusAccount = async () => {
   const res: any = await api.post("index/follow_wechat");
   if (res.code == 1) {
     showFocus.value = false;
-     uni.showToast({
-     	icon:'none',
-     	title: "关注公众号成功",
-     })
+    // uni.showToast({
+    // 	icon:'none',
+    // 	title: res.msg
+    // })
   }
 };
 
@@ -382,13 +411,29 @@ const loginClose = () => {
 };
 const toLogin = () => {
   if (token.value == null) {
-    if (typeof curPages.getTabBar === "function" && curPages.getTabBar()) {
-      curPages.getTabBar().setData({
-        showTabbar: false, // 隐藏tabbar防止遮挡
-      });
-    }
-    loginPopup.value.open();
-    return;
+	  // 在应用启动时进行设备判断
+	  uni.getSystemInfo({
+	    success: function (res) {
+	  	  console.log(res);
+	      // 判断是否是安卓设备
+	      if (res.platform === 'android') {
+	        // 跳转到 mobile/index 页面
+	  	  console.log('是安卓设备，跳转到mobile、index');
+	        uni.redirectTo({
+	          url: '/pages/mobile/index'
+	        });
+	      }else{
+			  if (typeof curPages.getTabBar === "function" && curPages.getTabBar()) {
+			    curPages.getTabBar().setData({
+			      showTabbar: false, // 隐藏tabbar防止遮挡
+			    });
+			  }
+			  loginPopup.value.open();
+			  return;
+		  }
+	    }
+	  });
+    
   }
   if (isImprove.value == -1) {
     // -1未完善

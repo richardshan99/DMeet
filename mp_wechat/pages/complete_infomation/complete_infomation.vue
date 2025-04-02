@@ -12,7 +12,7 @@
           <view class="head">
             <text class="title">我的照片</text>
             <drag-img keyName="path" v-model="avatarList" :cols="4" :style="{ marginTop: '24rpx' }"></drag-img>
-			      <text class="meno">传照片首张当头像，多多益善，展现最有魅力的你~</text>
+			<text class="meno">传照片首张当头像，多多益善，展现最有魅力的你~</text>
           </view>
 
           <view class="identity" :style="{ marginTop: '24rpx' }"> 
@@ -548,30 +548,23 @@ onLoad(async () => {
           if (formData.school == null || formData.school.length <= 0) {
             formData.school = schoolInfo.value;
           }
-		  
-          if (formData.education_type == null ||formData.education_type.length <= 0) {
+          if (
+            formData.education_type == null ||
+            formData.education_type.length <= 0
+          ) {
             formData.education_type = eduInfo.value;
             let eduSelected = educationalList.value.find(
-              (item) => item.value == formData.education_type);
-			  // 检查 eduSelected 是否为 undefined
-			    if (eduSelected) {
-			        formData.education_type_name = eduSelected.name;
-			    } else {
-			        formData.education_type_name = ''; // 如果未找到匹配项，给 education_type_name 赋一个默认值
-			    }
+              (item) => item.value == formData.education_type
+            );
+            formData.education_type_name = eduSelected.name;
           }
           if (formData.work_type == null || formData.work_type.length <= 0) {
             formData.work_type = workInfo.value;
             let workSelected = workTypeList.value.find(
-              (item) => item.value == formData.work_type);
-			   // 检查 workSelected 是否为 undefined
-			   if (workSelected) {
-					formData.work_type_name = workSelected.name;
-			   } else {
-				   formData.work_type_name = '';
-			   }
-			}
-		  
+              (item) => item.value == formData.work_type
+            );
+            formData.education_type_name = workSelected.name;
+          }
           if (formData.salary == null || formData.salary.length <= 0) {
             formData.salary = salaryInfo.value;
           }
@@ -665,7 +658,8 @@ const confirmHomeTown = (
 };
 
 const openJourney = async () => {
-  // 保存当前信息，并进入下一页继续完善信息  
+  // 获取七牛上传信息
+  // 开启见面之旅
   if (avatarList.value.length <= 0) {
     uni.showToast({
       icon: "none",
@@ -720,7 +714,8 @@ const openJourney = async () => {
               return vitem;
             });
             formData.avatar = arr.map((item) => item.path);
-            improveInfo();  //保存当前页面的信息
+            improveInfo();
+//			 uni.navigateTo({url: "/pages/data_editing/data_editing",});
           })
           .catch((e) => {
             uni.hideLoading();
@@ -729,13 +724,6 @@ const openJourney = async () => {
         uni.hideLoading();
       }
     })
-    .catch((err) => {
-      console.log(err);
-      uni.showToast({
-        icon: "none",
-        title: err[0].message,
-      });
-    });
 };
 
 const uploadFile = (path: string) => {
@@ -760,17 +748,17 @@ const improveInfo = async () => {
     formData.email = email.value;
     formData.email_code = email_code.value;
 
-    console.log("formData的值：",formData);
-    const res: any = await api.post("/user/improve", formData);	
-    uni.hideLoading();
+    console.log("improveInfo()~formData:",formData);
+//    const res: any = await api.post("/user/improve", formData);	
+//	console.log('请求响应数据:', res); // 输出响应数据
+//    uni.hideLoading();
     uni.showToast({
       icon: "none",
       title: "已完善",
     });
-    console.log("res.code的值：",res.code)
-    if (res.code == 1) {
+ //   if (res.code == 1) {
       uni.navigateTo({url: "/pages/data_editing/data_editing",});
-    }
+ //   }
   } catch (e) {
     uni.hideLoading();
   }
@@ -852,13 +840,13 @@ const confirmVal = (key: string, tab = 0) => {
   }
   let itemInd = options1.value.findIndex((item) => item.key == key);
   options1.value[itemInd].popup.close();
-  if (itemInd + 1 < options1.value.length) {
+ /* if (itemInd + 1 < options1.value.length) {
     setTimeout(() => {
       options1.value[itemInd + 1].popup.open();
     }, 300);
   } else {
     educationPopup.value.open();
-  }
+  }*/
 };
 
 const closePopup = (e: any) => {

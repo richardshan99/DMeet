@@ -201,8 +201,7 @@ onLoad((options) => {
     highAccuracyExpireTime: 3000,
     isHighAccuracy: true,
     success: (resp) => {
-      console.log("当前位置的经度：" + resp.longitude);
-      console.log("当前位置的纬度：" + resp.latitude);
+   
       api
         .post("/index/user_info", {
           id: options.id,

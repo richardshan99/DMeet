@@ -268,6 +268,10 @@ const operationItem = () => {
               blog_id: dynamicDetail.id,
             })
             .then((res: any) => {
+              uni.showToast({
+                icon: "none",
+                title: res.msg,
+              });
               if (res.code == 1) {
                 uni.$emit("refreshMyDynamic");
                 setTimeout(() => {

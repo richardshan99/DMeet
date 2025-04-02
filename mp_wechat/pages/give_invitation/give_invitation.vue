@@ -108,12 +108,14 @@
               :class="currentCity == 0 ? 'checked' : 'border_color'"
               ><text>当前地区</text></view
             >
+			<!--李川-->
+			<!--
             <view
               @click="changeCity(1)"
               class="common"
               :class="currentCity == 1 ? 'checked' : 'border_color'"
               ><text>更换地区</text>
-              </view>
+              </view>-->
           </view>
           <view @click="openSelectCity" v-if="currentCity == 1" class="city">
             <image
@@ -495,7 +497,7 @@
 import { api } from "@/common/request/index.ts";
 import { getCurrentInstance, reactive, ref, computed } from "vue";
 import { useStore } from "vuex";
-import { onLoad, onUnload } from "@dcloudio/uni-app";
+import { onLoad, onUnload,onShow } from "@dcloudio/uni-app";
 let chooseFlag = false;
 const cityPopup = ref();
 const meetTimePopup = ref();
@@ -630,6 +632,10 @@ onLoad((options) => {
   uni.$on("changeCity", updateCityInd);
 });
 
+
+onShow(() => {
+  uni.$on("updateMeetLocation", this.updateMeet);
+});
 const updateCityInd = () => {
   changeCity(1);
 };

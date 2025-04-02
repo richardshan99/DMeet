@@ -618,7 +618,7 @@ const getSenCode = async () => {
     });
     if (res.code != 1) {
       uni.showToast({
-        title: "发送失败",
+        title: res.msg,
         icon: "none",
       });
     } else {
@@ -663,22 +663,23 @@ onLoad(() => {
     active_Name.value = userInfo.value.active_point_text;
     active_point.value = userInfo.value.active_point;
     let homes = userInfo.value.howntown_last_id.split(",");
-
-    basicInfo.nickname = userInfo.value.nickname;
+    basicInfo.nickname =
+      userInfo.value.is_check_nickname == 1
+        ? userInfo.value.last_checked_nickname
+        : userInfo.value.nickname;
+    if (userInfo.value.is_check_nickname == 1) {
+      optionsTop[0].disabled = true;
+    }
     basicInfo.birth = userInfo.value.birth;
-
-    basicInfo.height = userInfo.value.height;
     basicInfo.weight = userInfo.value.weight;
-
+    basicInfo.height = userInfo.value.height;
     basicInfo.permanent_area = userInfo.value.area_id;
     basicInfo.permanent_area_name = userInfo.value.area;
-
+    basicInfo.weight = userInfo.value.weight;
     basicInfo.constellation = userInfo.value.constellation;
     basicInfo.constellation_name = userInfo.value.constellation_text;
-
     basicInfo.hometown = homes[homes.length - 1];
     basicInfo.hometown_name = userInfo.value.hometown;
-
     basicInfo.school = userInfo.value.school;
     basicInfo.education_type = userInfo.value.education_type;
     basicInfo.education_type_name = userInfo.value.education_type_text;
@@ -702,7 +703,6 @@ onLoad(() => {
   for (let x = 35; x <= 100; x++) {
     weightList.value.push(x);
   }
-  
   nextTick(() => {
     optionsTop[1].popInfo = birthPopup.value;
     optionsTop[2].popInfo = areaPopup.value;
@@ -966,7 +966,7 @@ const saveNow = async () => {
       if (res.code == 1) {
         uni.showToast({
           icon: "none",
-          title: "basicInfo保存成功",
+          title: res.msg,
         });
         store.dispatch("refreshInfo");
  

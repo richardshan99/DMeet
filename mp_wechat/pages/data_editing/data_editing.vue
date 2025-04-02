@@ -89,8 +89,8 @@
               <view @click="savePhotos" class="userInfo-focus">
                 <text class="txt">保存</text>
               </view>
-            </view>			
-            <drag-img keyName="path" v-model="avatarList" :cols="4":style="{ marginTop: '24rpx' }"></drag-img>
+            </view>
+            <drag-img showAudit keyName="path" v-model="avatarList" :cols="4":style="{ marginTop: '24rpx' }"></drag-img>
           </view>
 		  
          <view class="main-area" :style="{ marginTop: '24rpx' }">
@@ -187,7 +187,7 @@ import * as qiniuUploader from "@/common/upload/qiniuUploader.ts";
 import { api } from "@/common/request/index.ts";
 import { getCurrentInstance, ref, computed } from "vue";
 import { useStore } from "vuex";
-import { onShow } from "@dcloudio/uni-app";
+import { onLoad,onShow } from "@dcloudio/uni-app";
 const selectedLabels = ref([]); // 选择的
 const labelList = ref([]);
 const app = getCurrentInstance().appContext.app;
@@ -202,9 +202,8 @@ const navBack = () => {
 };
 
 const backtohome = () => {
-	// 对 selectedLabels 进行赋值
-	selectedLabels.value = Object.assign([], userInfo.value.label);
-	if (selectedLabels.value.length < 5) {
+	console.log(selectedLabels.value);
+	if (tagsList.value.length < 5) {
 		uni.showToast({
 		  icon: "none",
 		  title: "请至少选择5个标签",
@@ -250,7 +249,7 @@ const groupBy = (array, key) => {
 };
 
 const tabgetList = async () => {
-  const res = await api.post("user/info")
+  const res = await api.post("user/info");
   if (res.code == 1) {
     store.commit("setUserInfo", res.data);
     const obj = {};
@@ -272,12 +271,13 @@ const tabgetList = async () => {
       i.name = obj[i.id];
       return i;
     });
-//  console.log(groupById);
+    console.log(groupById);
     tagsList.value = groupById;
   }
 }
 
 const lableListNew = ref([])
+
 
 onShow(() => {
   avatarList.value = userInfo.value.albums_text.map((xitem: any) => {
@@ -288,6 +288,7 @@ onShow(() => {
   });
   api.post("user/label_list").then((res: any) => {
     if (res.code == 1) {
+		console.log(selectedLabels.value);
       lableListNew.value = res.data
       labelList.value = res.data
         .filter((item: any) => item.childlist.length > 0)
@@ -316,6 +317,10 @@ onShow(() => {
       tabgetList()
     }
   });
+});
+
+onLoad(() => {
+ 
 });
 
 const savePhotos = async () => {  
@@ -368,7 +373,7 @@ const submitAvatars = () => {
       if (xres.code == 1) {
         uni.showToast({
           icon: "none",
-          title:"user/edit_avatar提交成功",
+          title: xres.msg,
         });
         store.commit("setAvatar", avatarList.value[0]);
       }
@@ -393,6 +398,7 @@ const uplaodFile = (path: string) => {
 };
 
 const saveLabels = async () => {
+	console.log(selectedLabels);
   if (selectedLabels.value.length < 5) {
     uni.showToast({
       icon: "none",
@@ -407,7 +413,7 @@ const saveLabels = async () => {
     tabgetList()
     uni.showToast({
       icon: "none",
-      title: "个人标签提交成功",
+      title: res.msg,
     });
   }
 };
