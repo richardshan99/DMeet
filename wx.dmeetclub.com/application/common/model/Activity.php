@@ -258,7 +258,7 @@ class Activity Extends Model
         $this->can_join = true;
         if($user) {
             //活动是否结束， 是否超过开始时间， 是否超过最大参与人数
-            if($this->is_finish || time() < $this->begin_time || $this->max_num <= $joinNum) {
+            if($this->is_finish || time() > $this->begin_time || $this->max_num <= $joinNum) {
                 $this->can_join = false;
             } else {
                 //我是否参加过
@@ -268,8 +268,6 @@ class Activity Extends Model
                 }
             }
         }
-
-
         $areaNew = model('app\common\model\AreaNew')->column('id,name');
         $this->area = DMUserAreaNo($areaNew, $this->area_path, -3);
         $this->visible([
@@ -301,7 +299,7 @@ class Activity Extends Model
 
         $joinNum = $activity->user()->where('status', '<>', Dict::ACTIVITY_USER_STATUS_REFUND)->count();
         //活动是否结束， 是否超过开始时间， 是否超过最大参与人数
-        if($activity->is_finish || time() < $activity->begin_time || $activity->max_num <= $joinNum) {
+        if($activity->is_finish || time() > $activity->begin_time || $activity->max_num <= $joinNum) {
             throw new \Exception("活动已结束，请选择其他活动");
         }
 

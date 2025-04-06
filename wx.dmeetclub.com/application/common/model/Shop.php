@@ -214,7 +214,7 @@ class Shop Extends Model
             ->field("*, (st_distance_sphere(point(".$lon.",".$lat."), `point`)/1000) as distance, ST_AsText(`point`) as point_text")
             ->where(array_merge(['status' => Dict::USER_NORMAL], $where))
             ->whereRaw(isset($area) ? "find_in_set({$area}, `area_path`)": "1=-1")
-            ->orderRaw('distance ASC')
+            ->orderRaw('recommend ASC,distance ASC')
             ->paginate(20);
 
         $category = model('app\common\model\ShopCategory')
