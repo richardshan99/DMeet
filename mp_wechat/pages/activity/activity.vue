@@ -185,6 +185,16 @@
 			 	activeCity.id = defaultCity.value.cityInd
 			 	activeCity.name = defaultCity.value.child
 			 	getActivityList(true)
+			} else {
+                // 新增：如果 defaultCity 没有值，等待一段时间后再次检查
+                const checkInterval = setInterval(() => {
+                    if (defaultCity.value != null) {
+                        activeCity.id = defaultCity.value.cityInd
+                        activeCity.name = defaultCity.value.child
+                        getActivityList(true)
+                        clearInterval(checkInterval)
+                    }
+                }, 200)
 			 }
 			 api.post('activity/category').then((res:any) => {
 			 	if (res.code == 1) {

@@ -99,7 +99,7 @@
       ref="loginPopup"
       type="bottom"
     >
-      <uni-login></uni-login>
+       <uni-login @success="onLoginSuccess"></uni-login>
     </uni-popup>
     <uni-popup
       type="top"
@@ -226,15 +226,33 @@ const statusBarHeight = ref(20);
 // 定义全局变量,by Richard
 const loginArea = ref('');
 
-onLoad((options: any) => {
+onLoad(async (options: any) => {
   store.commit("setSource", options.source);
-  store.dispatch("setToken");    //在这里获取token
+  // 等待 setToken 操作完成
+  await store.dispatch("setToken"); 
+
   statusBarHeight.value = uni.getSystemInfoSync().statusBarHeight;
   officalHeight.value =
     uni.getSystemInfoSync().statusBarHeight +
     uni.getMenuButtonBoundingClientRect().height +
     4;
+	
+ // 新增：检查用户是否已经登录
+  if (token.value == null) {
+    if (typeof curPages.getTabBar === "function" && curPages.getTabBar()) {
+      curPages.getTabBar().setData({
+        showTabbar: false, // 隐藏tabbar防止遮挡
+      });
+    }
+    loginPopup.value.open();
+    return; // 未登录则不继续执行后续操作
+  }
+ // 用户已登录，继续执行后续操作
+  showAdvertisePopup();
+});
 
+// 提取显示广告弹窗的逻辑到一个单独的函数中
+const showAdvertisePopup = () => {
   uni.getLocation({
     type: "wgs84",
     isHighAccuracy: true,
@@ -327,7 +345,19 @@ onLoad((options: any) => {
         });
     },
   });
-});
+};
+
+// 登录成功的回调函数，调用显示广告弹窗的函数
+const onLoginSuccess = async () => {
+  if (typeof curPages.getTabBar === "function" && curPages.getTabBar()) {
+    curPages.getTabBar().setData({
+      showTabbar: true, // 显示tabbar
+    });
+  }
+  // 等待token更新完成
+  await store.dispatch("refreshInfo"); 
+  showAdvertisePopup();
+};
 
 const showErrorInfo = (e) => {
   // return
@@ -379,6 +409,10 @@ const loginClose = () => {
       showTabbar: true, // 显示tabbar
     });
   }
+  // 登录成功后，重新加载页面逻辑
+    if (token.value != null) {
+      onLoad({});
+    }
 };
 const toLogin = () => {
   if (token.value == null) {

@@ -83,11 +83,15 @@ const oneLogin = (e: any) => {
     success: async (res) => {
        // 打印 defaultCity.value 的值
       console.log('defaultCity.value 的值为:', defaultCity.value);
+      // 新增：检查 defaultCity.value 是否为 null 或 undefined
+      const loginArea = defaultCity.value ? defaultCity.value.showName : '';      
       const result: any = await api.post("user/login", {
         code: res.code, // res.code,
         phone_code: e.detail.code,
         source_id: source.value,
-        login_area: defaultCity.value.showName,  //by Richard
+        // 修改：使用处理后的 loginArea
+        login_area: loginArea,  //by Richard
+
       });
       if (result.data != null) {
         store.dispatch("setToken", result.data.token); // 更新token
